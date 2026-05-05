@@ -1,0 +1,80 @@
+\hypertarget{namespaceft__sensor__utils}{}\doxysection{ft\+\_\+sensor\+\_\+utils Namespace Reference}
+\label{namespaceft__sensor__utils}\index{ft\_sensor\_utils@{ft\_sensor\_utils}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{namespaceft__sensor__utils_a796e0315f8d2b5ca4a80fdd4f3fd49e5}{transform\+Vector}} (geometry\+\_\+msgs\+::msg\+::\+Vector3\+Stamped \&vector, const tf2\+\_\+ros\+::\+Buffer \&tf\+\_\+buffer, const std\+::string \&to\+\_\+frame, const std\+::string \&from\+\_\+frame)
+\begin{DoxyCompactList}\small\item\em Transforms the input vector from the source frame to the target frame. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceft__sensor__utils_a5a2265e203e468bd33aa6eb5d01139c1}{get\+EEWeight\+Wrench}} (geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&ee\+\_\+weight\+\_\+wrench, const geometry\+\_\+msgs\+::msg\+::\+Vector3\+Stamped \&ee\+\_\+weight, const std\+::vector$<$ double $>$ \&ee\+\_\+com)
+\begin{DoxyCompactList}\small\item\em Calculates the weight wrench of the end effector. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceft__sensor__utils_a2cadc2d0aeec35d101f3daa20338f34e}{bias\+Wrench}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&ee\+\_\+weight\+\_\+wrench, geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&cur\+\_\+wrench)
+\begin{DoxyCompactList}\small\item\em Applies a bias to the input wrench data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespaceft__sensor__utils_a2cadc2d0aeec35d101f3daa20338f34e}\label{namespaceft__sensor__utils_a2cadc2d0aeec35d101f3daa20338f34e}} 
+\index{ft\_sensor\_utils@{ft\_sensor\_utils}!biasWrench@{biasWrench}}
+\index{biasWrench@{biasWrench}!ft\_sensor\_utils@{ft\_sensor\_utils}}
+\doxysubsubsection{\texorpdfstring{biasWrench()}{biasWrench()}}
+{\footnotesize\ttfamily void ft\+\_\+sensor\+\_\+utils\+::bias\+Wrench (\begin{DoxyParamCaption}\item[{const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&}]{ee\+\_\+weight\+\_\+wrench,  }\item[{geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&}]{cur\+\_\+wrench }\end{DoxyParamCaption})}
+
+
+
+Applies a bias to the input wrench data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ee\+\_\+weight\+\_\+wrench} & The bias \\
+\hline
+{\em cur\+\_\+wrench} & The current wrench data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+cur\+\_\+wrench is updated with the bias 
+\end{DoxyPostcond}
+\mbox{\Hypertarget{namespaceft__sensor__utils_a5a2265e203e468bd33aa6eb5d01139c1}\label{namespaceft__sensor__utils_a5a2265e203e468bd33aa6eb5d01139c1}} 
+\index{ft\_sensor\_utils@{ft\_sensor\_utils}!getEEWeightWrench@{getEEWeightWrench}}
+\index{getEEWeightWrench@{getEEWeightWrench}!ft\_sensor\_utils@{ft\_sensor\_utils}}
+\doxysubsubsection{\texorpdfstring{getEEWeightWrench()}{getEEWeightWrench()}}
+{\footnotesize\ttfamily void ft\+\_\+sensor\+\_\+utils\+::get\+EEWeight\+Wrench (\begin{DoxyParamCaption}\item[{geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&}]{ee\+\_\+weight\+\_\+wrench,  }\item[{const geometry\+\_\+msgs\+::msg\+::\+Vector3\+Stamped \&}]{ee\+\_\+weight,  }\item[{const std\+::vector$<$ double $>$ \&}]{ee\+\_\+com }\end{DoxyParamCaption})}
+
+
+
+Calculates the weight wrench of the end effector. 
+
+This is the end effector weight, and the associated torque it causes 
+\begin{DoxyParams}{Parameters}
+{\em ee\+\_\+weight\+\_\+wrench} & The end effector weight wrench object \\
+\hline
+{\em ee\+\_\+weight} & The weight of the end effector \\
+\hline
+{\em ee\+\_\+com} & The center of mass of the end effector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+ee\+\_\+weight\+\_\+wrench is updated with the weight wrench of the end effector 
+\end{DoxyPostcond}
+\mbox{\Hypertarget{namespaceft__sensor__utils_a796e0315f8d2b5ca4a80fdd4f3fd49e5}\label{namespaceft__sensor__utils_a796e0315f8d2b5ca4a80fdd4f3fd49e5}} 
+\index{ft\_sensor\_utils@{ft\_sensor\_utils}!transformVector@{transformVector}}
+\index{transformVector@{transformVector}!ft\_sensor\_utils@{ft\_sensor\_utils}}
+\doxysubsubsection{\texorpdfstring{transformVector()}{transformVector()}}
+{\footnotesize\ttfamily bool ft\+\_\+sensor\+\_\+utils\+::transform\+Vector (\begin{DoxyParamCaption}\item[{geometry\+\_\+msgs\+::msg\+::\+Vector3\+Stamped \&}]{vector,  }\item[{const tf2\+\_\+ros\+::\+Buffer \&}]{tf\+\_\+buffer,  }\item[{const std\+::string \&}]{to\+\_\+frame,  }\item[{const std\+::string \&}]{from\+\_\+frame }\end{DoxyParamCaption})}
+
+
+
+Transforms the input vector from the source frame to the target frame. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vector} & The input vector \\
+\hline
+{\em tf\+\_\+buffer} & The tf buffer \\
+\hline
+{\em to\+\_\+frame} & The target frame \\
+\hline
+{\em from\+\_\+frame} & The source frame \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the transform was successful, false otherwise 
+\end{DoxyReturn}

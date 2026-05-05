@@ -1,0 +1,14 @@
+Set the launch\+\_\+ft\+\_\+sensor to true to by-\/pass the robot force-\/torque broadcaster. This accesses our gravity compensation and ft data filtering nodes. You can also implement your own, or use the ros2 default ones. Can set the target force as a param or published on a topic (publishing takes priority)
+
+/$\ast$\+Todo\+:
+\begin{DoxyItemize}
+\item Add angular force(torque) control
+\item Remove filter RCLCPP\+\_\+\+INFO in publish\+Twist()
+\item Transform the wrench data to the EE frame of the robot
+\item Add gravity compensation
+\item Subscribe to target wrench topic; give higher priority over config target force \& call set\+Target\+Force() in the callback. Check for valid target force data $\ast$/
+
+// Todo\+: add that if 0 force is detected, do not move,else if 4, etc... // Check if there\textquotesingle{}s contact with the environment // float wrench\+\_\+mag = wrench\+\_\+magnitude(cur\+\_\+wrench\+\_\+); // const double wrench\+\_\+threshold = 2.\+0; // 4N, read from param server // if (wrench\+\_\+mag $<$ wrench\+\_\+threshold) \{ // RCLCPP\+\_\+\+WARN(this-\/$>$get\+\_\+logger(), \char`\"{}\+No Contact. Maintaining twist.\char`\"{}); // twist\+\_\+.\+linear.\+z = 0.\+01; // get from dim and param // twist\+\_\+pub\+\_\+-\/$>$publish(twist\+\_\+);
+
+// \} 
+\end{DoxyItemize}

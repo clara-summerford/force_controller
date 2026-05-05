@@ -1,0 +1,90 @@
+\label{index_md__home_hawkeye_force_control_src_force_controller_README}%
+\Hypertarget{index_md__home_hawkeye_force_control_src_force_controller_README}%
+This is a twist-\/based force controller. It commands an end-\/effector twist to achieve a target force based on the force feedback in the desired dimension. This controls the force exerted at the end effector of the robot arm. It leverages a simple PID controller setup for control and a wrench filter to smooth the wrench data.
+
+The responsiveness of the behavior can be tweaked by the following parameters\+: The p, i and d gains determine the responsiveness in the desired Cartesian axis. The higher these values, the faster the robot moves in response to either the sensed contact forces or the target wrench. The proportional term, p, adjusts the control action based on the current error, the integral term, i, integrates past errors to eliminate steady-\/state errors, and the derivative term, d, anticipates future errors based on the rate of change of the error. Proportional gains (p) are normally sufficient and you\textquotesingle{}ll probably not need an i or d gain for most use cases. With a little bit of tweaking, though, they sometimes help to reduce oscillations in stiff contacts.
+
+This controller works with both single and multi-\/dimensional force control problems.\hypertarget{index_autotoc_md1}{}\doxysubsubsection{Tips for tuning\+:}\label{index_autotoc_md1}
+Tune the gains to control the speed or time it takes to reach the desired force.
+
+p\+: Start with a small value (e.\+g., 0.\+1) and gradually increase it until the system starts to respond well without excessive oscillations.
+
+i \+: Start with a very small value (e.\+g., 0.\+001) to prevent integral windup and gradually increase it until the steady-\/state error is reduced. Be cautious with high integral gains, as they can lead to overshooting and instability.
+
+d\+: Start with a small value (e.\+g., 0.\+01) and gradually increase it to improve system response and damping. However, be cautious not to set it too high, as it can introduce noise and lead to instability.\hypertarget{index_autotoc_md2}{}\doxysection{Installation}\label{index_autotoc_md2}
+\hypertarget{index_autotoc_md3}{}\doxysubsection{Requirements}\label{index_autotoc_md3}
+
+\begin{DoxyItemize}
+\item A force torque sensor
+\item A twist controller (Move\+It Servo is preferred). Checkout the twist\+\_\+controller branch if your controller requires Twist messages instead of Twist\+Stamped messages.
+\end{DoxyItemize}\hypertarget{index_autotoc_md4}{}\doxysubsection{Standard dependencies}\label{index_autotoc_md4}
+This package is based on \href{https://docs.ros.org/}{\texttt{ ROS2}}. Currently based on ROS2 humble release.\hypertarget{index_autotoc_md5}{}\doxysubsection{Download the pacakge}\label{index_autotoc_md5}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{export COLCON\_WS=\string~/workspace/force\_controller\_ws}
+\DoxyCodeLine{mkdir -\/p \$COLCON\_WS/src}
+\DoxyCodeLine{cd \$COLCON\_WS}
+\DoxyCodeLine{git clone https://github.com/UTNuclearRobotics/ros2\_force\_controller.git src/force\_controller\_ws}
+
+\end{DoxyCode}
+\hypertarget{index_autotoc_md6}{}\doxysubsubsection{Install dependencies, compile and source the package}\label{index_autotoc_md6}
+We use \href{https://github.com/machines-in-motion/machines-in-motion.github.io/wiki/use_colcon}{\texttt{ colcon}} to build this package\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo apt-\/get install ros-\/humble-\/moveit-\/servo}
+\DoxyCodeLine{rosdep install -\/-\/ignore-\/src -\/-\/from-\/paths src -\/y -\/r}
+\DoxyCodeLine{cd \$COLCON\_WS}
+\DoxyCodeLine{colcon build -\/-\/cmake-\/args -\/DCMAKE\_BUILD\_TYPE=Release}
+
+\end{DoxyCode}
+\hypertarget{index_autotoc_md7}{}\doxysection{Usage}\label{index_autotoc_md7}
+The launch file launches the force\+\_\+controller node with the following some default configuration eg. it\textquotesingle{}s defaulted to publish on the servo node. Change the values in the config file to fit your specific setup. For now, only a single dimension is force-\/controlled. Set the desired target force as a parameter in the config file.
+
+To launch the node, run\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 launch force\_controller twist\_force\_controller.launch.py}
+
+\end{DoxyCode}
+\hypertarget{index_autotoc_md8}{}\doxysection{Safety}\label{index_autotoc_md8}
+
+\begin{DoxyItemize}
+\item This package uses maximum twist and wrench values to avoid damaging the robot or the task.
+\item It only publishes twists if force-\/torque sensor data available on initialization.
+\item If the force-\/torque data comes close to the max, or close to zero (stops publishing), the controller publishes 0 twists.
+\end{DoxyItemize}\hypertarget{index_autotoc_md9}{}\doxysection{Sensor data filtering}\label{index_autotoc_md9}
+Force -\/ torque sensor data is typically noisy due to a variety of factors, such as sensor vibrations, electrical interference, and mechanical vibrations. Using a filter can help to remove this noise and provide a smoother signal that is easier to control. The following filters are provided\+:
+\begin{DoxyItemize}
+\item Deadband (set deadband\+\_\+threshold to 0 to remove deadband)
+\item Exponential Moving Average Filter
+\item 2nd Order Butterworth Filter
+\item Kalman Filter
+\end{DoxyItemize}
+
+Explanations/tips are provided in the configuration file. Set the controller parameters accordingly based on desired filtering behavior. Carefully tune these values to avoid introducing (phase) lag or smoothing out crucial information.\hypertarget{index_autotoc_md10}{}\doxysection{Additional Insights}\label{index_autotoc_md10}
+
+\begin{DoxyItemize}
+\item When loaded, the EE will move with a low twist along the desired force control dimension, until it starts to feel a force above 1 N. This will trigger the controller sequence of adjusting the twist relative to the desired force and in response to the measured ft force.
+\begin{DoxyItemize}
+\item The are three ways to set the target force\+:
+\begin{DoxyEnumerate}
+\item Pass a value in the config file
+\item Programmatically call the set\+Target\+Force() to update the target\+\_\+force\+\_\+ variable
+\item Publish the desired force on a topic. This has to be a double, and should be in the desired dimension already set in the config file.
+
+The config file value takes precedence and is set on the initialization of the node. After that the value can be changed. In this case, another node can publish a series of setpoints for the controller to achieve.
+
+You have the option to control one dimension or all six dimensions; the default is single dimension force control. Use this if you do not care/ do not wish to actively control the other wrench dimensions. Eg. Instead of 0 N force control in the x direction, just ignore it to avoid actively trying to achieve 0 N in that direction. Set/ensure that the {\ttfamily control\+\_\+wrench} parameter is {\ttfamily False}.
+
+Use multi-\/dimension force control to apply a wrench through active control of all dimensions. For this, set the {\ttfamily control\+\_\+wrench} parameter to {\ttfamily True} and set the {\ttfamily target\+\_\+wrench} parameter. You can then set the wrench according to the three ways listed above. You can leave {\ttfamily target\+\_\+force} blank in this case.
+
+Note\+: Use only one 1 control scheme at a time.
+\end{DoxyEnumerate}
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{index_autotoc_md11}{}\doxysubsection{Main Equation}\label{index_autotoc_md11}
+This is framed as a quasi-\/static problem, thus ignoring acceleration. To maintain an equilibrium, the equation\+:
+
+F\+\_\+target = kx -\/ bv
+
+where, F\+\_\+target is the desired force, k is the stiffness, x is the displacement, b is the damping, and v is the velocity, helps to expresses the target force required to maintain force equilibrium, with the restoring force (kx) acting towards equilibrium and the damping force (-\/bv) opposing velocity.\hypertarget{index_autotoc_md12}{}\doxysubsection{Feedforward term\+:}\label{index_autotoc_md12}
+Help to eliminate a lot of the setpoint and disturbance error before it gets to the controller. It anticipates the force needed at each \textquotesingle{}waypoint\textquotesingle{} based on the desired trajectory. This can help pre-\/compensate for the expected force and reduce settling time. This can be applied to constant setpoints, but is generally advised to use the ff for a changing setpoint. Adjust the config file params accordingly.
+
+Note\+: While dropping the feedforward term simplifies the control scheme, it might not be the optimal choice if accurate force tracking, increased overshoot and settling time, fast response times, and energy efficiency are crucial considerations. Please tune the variables according to your system dynamics and conditions for optimal performance. 

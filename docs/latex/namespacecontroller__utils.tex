@@ -1,0 +1,188 @@
+\hypertarget{namespacecontroller__utils}{}\doxysection{controller\+\_\+utils Namespace Reference}
+\label{namespacecontroller__utils}\index{controller\_utils@{controller\_utils}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \mbox{\hyperlink{namespacecontroller__utils_ac4007c39d14f8398f9f8b806f6925924}{is\+Wrench\+Nan}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr wrench)
+\begin{DoxyCompactList}\small\item\em Checks whether the passed value is a valid number value. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{namespacecontroller__utils_a313011f5051589a9b261a565bfc904e5}{is\+Wrench\+Nan}} (const std\+::vector$<$ double $>$ \&wrench)
+\begin{DoxyCompactList}\small\item\em Checks whether the passed value is a valid number value. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{namespacecontroller__utils_a9b120d6e4c3f8d2652161df2a73f802b}{to\+Wrench\+Vector}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr wrench)
+\begin{DoxyCompactList}\small\item\em Converts a wrench message to a wrench vector. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{namespacecontroller__utils_aa4c07b040091d95797575dc6bf83e9f7}{to\+Wrench\+Vector}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&wrench)
+\begin{DoxyCompactList}\small\item\em Converts a wrench message to a wrench vector. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{namespacecontroller__utils_ab8ea7e08a97f2e6d52e272bb4d69de23}{is\+In\+Range}} (const double value, const double min, const double max)
+\begin{DoxyCompactList}\small\item\em Checks whether the passed value is within the specified range. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{namespacecontroller__utils_aa84fc3d324ab08d0965ccfba2894503c}{is\+Wrench\+In\+Range}} (const std\+::vector$<$ double $>$ \&wrench, const double max\+\_\+force, const double max\+\_\+torque)
+\begin{DoxyCompactList}\small\item\em Checks whether the passed wrench is within the specified range. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacecontroller__utils_a0c241f81bcfa5690085a60eaa11ba3e3}{to\+Twist\+Msg}} (geometry\+\_\+msgs\+::msg\+::\+Twist\+Stamped \&twist, const std\+::vector$<$ double $>$ \&value)
+\begin{DoxyCompactList}\small\item\em Converts a wrench vector to a twist message. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacecontroller__utils_a1c73263d327a85baf4444cb19e13cda1}{print\+Wrench}} (const std\+::vector$<$ double $>$ \&wrench, const std\+::string \&logger\+\_\+name, const std\+::string \&msg)
+\begin{DoxyCompactList}\small\item\em Prints the wrench vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespacecontroller__utils_ab8ea7e08a97f2e6d52e272bb4d69de23}\label{namespacecontroller__utils_ab8ea7e08a97f2e6d52e272bb4d69de23}} 
+\index{controller\_utils@{controller\_utils}!isInRange@{isInRange}}
+\index{isInRange@{isInRange}!controller\_utils@{controller\_utils}}
+\doxysubsubsection{\texorpdfstring{isInRange()}{isInRange()}}
+{\footnotesize\ttfamily bool controller\+\_\+utils\+::is\+In\+Range (\begin{DoxyParamCaption}\item[{const double}]{value,  }\item[{const double}]{min,  }\item[{const double}]{max }\end{DoxyParamCaption})}
+
+
+
+Checks whether the passed value is within the specified range. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to be checked \\
+\hline
+{\em min} & The minimum value of the range \\
+\hline
+{\em max} & The maximum value of the range \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the value is within the range, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecontroller__utils_aa84fc3d324ab08d0965ccfba2894503c}\label{namespacecontroller__utils_aa84fc3d324ab08d0965ccfba2894503c}} 
+\index{controller\_utils@{controller\_utils}!isWrenchInRange@{isWrenchInRange}}
+\index{isWrenchInRange@{isWrenchInRange}!controller\_utils@{controller\_utils}}
+\doxysubsubsection{\texorpdfstring{isWrenchInRange()}{isWrenchInRange()}}
+{\footnotesize\ttfamily bool controller\+\_\+utils\+::is\+Wrench\+In\+Range (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{wrench,  }\item[{const double}]{max\+\_\+force,  }\item[{const double}]{max\+\_\+torque }\end{DoxyParamCaption})}
+
+
+
+Checks whether the passed wrench is within the specified range. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em wrench} & The wrench to be checked \\
+\hline
+{\em max\+\_\+force} & The maximum force value of the range \\
+\hline
+{\em max\+\_\+torque} & The maximum torque value of the range \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the wrench is within the range, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecontroller__utils_ac4007c39d14f8398f9f8b806f6925924}\label{namespacecontroller__utils_ac4007c39d14f8398f9f8b806f6925924}} 
+\index{controller\_utils@{controller\_utils}!isWrenchNan@{isWrenchNan}}
+\index{isWrenchNan@{isWrenchNan}!controller\_utils@{controller\_utils}}
+\doxysubsubsection{\texorpdfstring{isWrenchNan()}{isWrenchNan()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily bool controller\+\_\+utils\+::is\+Wrench\+Nan (\begin{DoxyParamCaption}\item[{const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr}]{wrench }\end{DoxyParamCaption})}
+
+
+
+Checks whether the passed value is a valid number value. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to be checked \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the value is a valid number, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecontroller__utils_a313011f5051589a9b261a565bfc904e5}\label{namespacecontroller__utils_a313011f5051589a9b261a565bfc904e5}} 
+\index{controller\_utils@{controller\_utils}!isWrenchNan@{isWrenchNan}}
+\index{isWrenchNan@{isWrenchNan}!controller\_utils@{controller\_utils}}
+\doxysubsubsection{\texorpdfstring{isWrenchNan()}{isWrenchNan()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily bool controller\+\_\+utils\+::is\+Wrench\+Nan (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{wrench }\end{DoxyParamCaption})}
+
+
+
+Checks whether the passed value is a valid number value. 
+
+\begin{DoxyNote}{Note}
+This is an overloaded function, which takes a wrench vector as input 
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to be checked \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+True if the value is a valid number, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecontroller__utils_a1c73263d327a85baf4444cb19e13cda1}\label{namespacecontroller__utils_a1c73263d327a85baf4444cb19e13cda1}} 
+\index{controller\_utils@{controller\_utils}!printWrench@{printWrench}}
+\index{printWrench@{printWrench}!controller\_utils@{controller\_utils}}
+\doxysubsubsection{\texorpdfstring{printWrench()}{printWrench()}}
+{\footnotesize\ttfamily void controller\+\_\+utils\+::print\+Wrench (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{wrench,  }\item[{const std\+::string \&}]{logger\+\_\+name,  }\item[{const std\+::string \&}]{msg }\end{DoxyParamCaption})}
+
+
+
+Prints the wrench vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em wrench} & The wrench vector \\
+\hline
+{\em logger\+\_\+name} & The logger name \\
+\hline
+{\em msg} & The message to be printed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+The wrench vector is printed 
+\end{DoxyPostcond}
+\mbox{\Hypertarget{namespacecontroller__utils_a0c241f81bcfa5690085a60eaa11ba3e3}\label{namespacecontroller__utils_a0c241f81bcfa5690085a60eaa11ba3e3}} 
+\index{controller\_utils@{controller\_utils}!toTwistMsg@{toTwistMsg}}
+\index{toTwistMsg@{toTwistMsg}!controller\_utils@{controller\_utils}}
+\doxysubsubsection{\texorpdfstring{toTwistMsg()}{toTwistMsg()}}
+{\footnotesize\ttfamily void controller\+\_\+utils\+::to\+Twist\+Msg (\begin{DoxyParamCaption}\item[{geometry\+\_\+msgs\+::msg\+::\+Twist\+Stamped \&}]{twist,  }\item[{const std\+::vector$<$ double $>$ \&}]{value }\end{DoxyParamCaption})}
+
+
+
+Converts a wrench vector to a twist message. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em twist} & The twist message \\
+\hline
+{\em value} & The wrench vector \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+twist is updated with the wrench vector 
+\end{DoxyPostcond}
+\mbox{\Hypertarget{namespacecontroller__utils_aa4c07b040091d95797575dc6bf83e9f7}\label{namespacecontroller__utils_aa4c07b040091d95797575dc6bf83e9f7}} 
+\index{controller\_utils@{controller\_utils}!toWrenchVector@{toWrenchVector}}
+\index{toWrenchVector@{toWrenchVector}!controller\_utils@{controller\_utils}}
+\doxysubsubsection{\texorpdfstring{toWrenchVector()}{toWrenchVector()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ controller\+\_\+utils\+::to\+Wrench\+Vector (\begin{DoxyParamCaption}\item[{const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&}]{wrench }\end{DoxyParamCaption})}
+
+
+
+Converts a wrench message to a wrench vector. 
+
+\begin{DoxyNote}{Note}
+This is an overloaded function, which takes a wrench message as input 
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em wrench} & The wrench message \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The wrench vector 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecontroller__utils_a9b120d6e4c3f8d2652161df2a73f802b}\label{namespacecontroller__utils_a9b120d6e4c3f8d2652161df2a73f802b}} 
+\index{controller\_utils@{controller\_utils}!toWrenchVector@{toWrenchVector}}
+\index{toWrenchVector@{toWrenchVector}!controller\_utils@{controller\_utils}}
+\doxysubsubsection{\texorpdfstring{toWrenchVector()}{toWrenchVector()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ controller\+\_\+utils\+::to\+Wrench\+Vector (\begin{DoxyParamCaption}\item[{const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr}]{wrench }\end{DoxyParamCaption})}
+
+
+
+Converts a wrench message to a wrench vector. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em wrench} & The wrench message \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The wrench vector 
+\end{DoxyReturn}

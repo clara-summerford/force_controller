@@ -1,0 +1,82 @@
+force_controller:
+  ros__parameters:
+
+    ## Target force
+    # Use this to apply a constant force, ignoring other dimensions
+    # Use this if you don't care about the other wrench dimensions or don't wish to 
+    # actively control them. Eg. Instead of 0 N force control in the x direction, just 
+    # ignore it to avoid actively trying to achieve 0 N in that direction.  
+    force_setpoint: 10.0 # N 
+    dimension: 'Z' 
+    target_force_sub_topic: target_force_data # target force streaming
+    damping_1D: [25.0] # Ns/m or Nms/rad
+    stiffness_1D: [2000.0] # N/m or Nm/rad
+
+    ## Target wrench 
+    # Use this to apply a wrench through active control of all dimensions
+    control_wrench: False # If True, we control the 6D wrench. If false, we control only a 1D target force
+    wrench_setpoint: [0.0, 0.0, -10.0, 0.0, 0.0, 0.0] # fx,fy,fz,tx,ty,tz
+    target_wrench_sub_topic: target_wrench_data # target wrench streaming
+    damping_6D: [100.0, 100.0, 100.0, 10.0, 10.0, 10.0] # Ns/m or Nms/rad
+    stiffness_6D: [2000.0, 2000.0, 2000.0, 100.0, 100.0, 100.0] # N/m or Nm/rad
+
+    pub_topic: servo_node/delta_twist_cmds #servo_node or twist streaming
+    has_ft_sensor: True # Controls the initialization of the force controller object 
+    wrench_sub_topic: wrench_data #/robotiq_force_torque_sensor_broadcaster/wrench #wrench_data # ft_sensor_data #t_sensor data streaming
+    ff_gain: 0.0 # Feedforward gain. Set to 0.0 to disable the feedforward term. To add this term, find gain values that  
+      # balance the trade-off between achieving a fast and responsive force response with minimal overshoot or oscillations.
+    add_restoring_force_term: False # Add a restorative "kx" term to the control law
+    anti_windup_error_threshold: 10.0 # N, error threshold for anti-windup
+    ft_sensor_frame: panda_hand  #"end_effector_link" # Reference link for the force sensor
+    gravity_frame: world # Reference frame for calculations
+    twist_pub_frame: panda_hand #Reference frame for the twist command
+    compensate_for_ee_weight: false # Determines whether or not to remove the wrench caused be EE weight before doing calcs
+    ee_weight: 9.02 # Newtons, the weight of the EE. (m*g = 0.92kg * 9.81m/s^2 = 9.02N)
+    ee_com: [0.00, 0.00, 0.06] # Meters, the location of the center of mass, in the Force/torque frame
+
+    ## PID gains
+    kp: 0.1 # Proportional gain
+    ki: 0.001 # Integral gain, adjust to improve the steady-state error.
+    kd: 0.01 # Derivative gain, adjust to reduce overshoot and ringing.
+    
+    ## Safety limits
+    max_force: 20.0 # N
+    max_torque: 10.0 # Nm
+    max_twist: 0.5 # m/s  
+
+    ## Filter parameters
+    # A deadband is a range of values around zero where the system does not respond or respond minimally
+    # Use this to reduce the impact of small, undesired force or torque fluctuations. 
+    deadband_threshold: 0.0 # N, minimum force/torque magnitude to be considered non-zero
+    
+    # Exponential moving average filter parameters
+    apply_ema_filter: False # Apply an exponential moving average filter to the force/torque data
+
+    # The choice of the smoothing factor (α) determines how quickly the EMA responds to changes in the input data. 
+    # A smaller αα gives more weight to historical data and results in a smoother output, while a larger α makes 
+    # the filter more responsive to recent changes but can introduce more noise.
+    ema_alpha: 0.4 # Smoothing factor,determines the weight given to the current input. (0 < alpha < 1)
+
+    # 2nd Order ButterworthFilter parameters 
+    apply_bw_filter: False # Apply a 2nd order Butterworth filter to the force/torque data
+
+    # Book: "Digital Signal Processing: Principles, Algorithms, and Applications" by John G. Proakis and Dimitris G. Manolakis.
+    # The cutoff frequency determines the point at which the filter starts attenuating higher frequencies. 
+    # For force-torque sensor data, you may want to choose a cutoff frequency that preserves the relevant 
+    # components of your signal while attenuating high-frequency noise.
+    cutoff_freq: 100.0 # Hz
+
+    # The sampling time is the time between successive measurements. Choose dtdt based on the update rate 
+    # of your force-torque sensor. It should be small enough to capture the variations in the signal accurately.
+    sampling_time: 0.01 # dt, s -> 100Hz
+
+    # KalmanFilter parameters
+    apply_kf_filter: False # Apply a Kalman filter to the force/torque data
+    process_noise: 0.01 # Process noise covariance, Q
+    measurement_noise: 0.1 # Measurement noise covariance, R; random errors or uncertainties in the measurement
+    
+    # Enter the filter order in the order you want them to be applied
+    filter_order:
+    - EMA
+    - Butterworth
+    - Kalman

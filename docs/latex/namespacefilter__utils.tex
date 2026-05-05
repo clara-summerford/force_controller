@@ -1,0 +1,260 @@
+\hypertarget{namespacefilter__utils}{}\doxysection{filter\+\_\+utils Namespace Reference}
+\label{namespacefilter__utils}\index{filter\_utils@{filter\_utils}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_ad55ca1fc2755595a8409edbf1a424c85}{apply\+Deadband}} (double input, double deadband)
+\begin{DoxyCompactList}\small\item\em Applies a deadband to the input sensor data. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefilter__utils_aace6e4ad0c3940676dc1c385e7ae7b9a}{apply\+EMAFilter}} (double alpha, double input)
+\begin{DoxyCompactList}\small\item\em Exponential moving average filter for sensor data. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefilter__utils_a259c317d5b5ec7b67ca530f58ef12b50}{apply\+Butterworth\+Filter}} (double cut\+\_\+off\+\_\+freq, double dt, double input)
+\begin{DoxyCompactList}\small\item\em Butterworth filter for sensor data. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefilter__utils_ac7439547d9611fb4dc8f85cfe55dab30}{apply\+Kalman\+Filter}} (double process\+\_\+noise, double measurement\+\_\+noise, double input)
+\begin{DoxyCompactList}\small\item\em Kalman filter for sensor data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacefilter__utils_ab23b5b16b33c545ce7cbea6bd6eb8628}{filter\+Wrench}} (bool apply\+\_\+ema, bool apply\+\_\+bw, bool apply\+\_\+kf, double \&cur\+\_\+wrench, const double deadband\+\_\+threshold, const double alpha, const double cut\+\_\+off\+\_\+frequency, const double dt, const double process\+\_\+noise, const double measurement\+\_\+noise)
+\begin{DoxyCompactList}\small\item\em Applies a filter to the input sensor data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacefilter__utils_a66d67f55b126c8d7e8e9230da5884541}{filter\+Wrench}} (bool apply\+\_\+ema, bool apply\+\_\+bw, bool apply\+\_\+kf, geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&wrench, const double deadband\+\_\+threshold, const double alpha, const double cut\+\_\+off\+\_\+frequency, const double dt, const double process\+\_\+noise, const double measurement\+\_\+noise)
+\begin{DoxyCompactList}\small\item\em Applies a filter to the input sensor data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_aa3284fdf257f97c05a304e6df6b677c2}{prev\+\_\+value}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a9242a4e6d17b6f34cfd3ebdd588eac6c}{x1}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a94ac423239eea4b4faa91c372489c828}{x2}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a5207bb59fce5d83c3cbfaee1866be835}{y1}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a1e42b63b4c29be311f8a46d43e7a2414}{y2}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a9498c731aa75bc545d47037e02430f7d}{error\+\_\+covariance}} = 1.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a68d02b352c6112fd279e16ee3ed39ae9}{estimate}} = 1.\+0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespacefilter__utils_a259c317d5b5ec7b67ca530f58ef12b50}\label{namespacefilter__utils_a259c317d5b5ec7b67ca530f58ef12b50}} 
+\index{filter\_utils@{filter\_utils}!applyButterworthFilter@{applyButterworthFilter}}
+\index{applyButterworthFilter@{applyButterworthFilter}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{applyButterworthFilter()}{applyButterworthFilter()}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::apply\+Butterworth\+Filter (\begin{DoxyParamCaption}\item[{double}]{cut\+\_\+off\+\_\+freq,  }\item[{double}]{dt,  }\item[{double}]{input }\end{DoxyParamCaption})}
+
+
+
+Butterworth filter for sensor data. 
+
+This is a type of signal processing filter designed to have as flat a frequency response as possible in the passband. 
+\begin{DoxyParams}{Parameters}
+{\em cut\+\_\+off\+\_\+freq} & The cutoff frequency of the filter \\
+\hline
+{\em dt} & The sampling time \\
+\hline
+{\em input} & The input sensor data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The filtered sensor data 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{https://en.wikipedia.org/wiki/Butterworth_filter}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Butterworth\+\_\+filter}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{namespacefilter__utils_ad55ca1fc2755595a8409edbf1a424c85}\label{namespacefilter__utils_ad55ca1fc2755595a8409edbf1a424c85}} 
+\index{filter\_utils@{filter\_utils}!applyDeadband@{applyDeadband}}
+\index{applyDeadband@{applyDeadband}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{applyDeadband()}{applyDeadband()}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::apply\+Deadband (\begin{DoxyParamCaption}\item[{double}]{input,  }\item[{double}]{deadband }\end{DoxyParamCaption})}
+
+
+
+Applies a deadband to the input sensor data. 
+
+This is a control error band in which a system\textquotesingle{}s response is insensitive to the magnitude of the error. The deadband is a range of values in which a sensor\textquotesingle{}s output is zero. Use this to eliminate undesired control motion. 
+\begin{DoxyParams}{Parameters}
+{\em input} & The input sensor data \\
+\hline
+{\em deadband} & The deadband value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The sensor data after applying the deadband 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{https://en.wikipedia.org/wiki/Deadband}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Deadband}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{namespacefilter__utils_aace6e4ad0c3940676dc1c385e7ae7b9a}\label{namespacefilter__utils_aace6e4ad0c3940676dc1c385e7ae7b9a}} 
+\index{filter\_utils@{filter\_utils}!applyEMAFilter@{applyEMAFilter}}
+\index{applyEMAFilter@{applyEMAFilter}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{applyEMAFilter()}{applyEMAFilter()}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::apply\+EMAFilter (\begin{DoxyParamCaption}\item[{double}]{alpha,  }\item[{double}]{input }\end{DoxyParamCaption})}
+
+
+
+Exponential moving average filter for sensor data. 
+
+This is a type of infinite impulse response filter that applies weighting factors which decrease exponentially. The weighting for each older datum decreases exponentially, never reaching zero. 
+\begin{DoxyParams}{Parameters}
+{\em alpha} & The smoothing factor, which determines the weight given to the current input. \\
+\hline
+{\em input} & The input sensor data to be filtered \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The filtered sensor data 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{https://en.wikipedia.org/wiki/Moving_average\#Exponential_moving_average}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Moving\+\_\+average\#\+Exponential\+\_\+moving\+\_\+average}} 
+\end{DoxySeeAlso}
+\mbox{\Hypertarget{namespacefilter__utils_ac7439547d9611fb4dc8f85cfe55dab30}\label{namespacefilter__utils_ac7439547d9611fb4dc8f85cfe55dab30}} 
+\index{filter\_utils@{filter\_utils}!applyKalmanFilter@{applyKalmanFilter}}
+\index{applyKalmanFilter@{applyKalmanFilter}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{applyKalmanFilter()}{applyKalmanFilter()}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::apply\+Kalman\+Filter (\begin{DoxyParamCaption}\item[{double}]{process\+\_\+noise,  }\item[{double}]{measurement\+\_\+noise,  }\item[{double}]{input }\end{DoxyParamCaption})}
+
+
+
+Kalman filter for sensor data. 
+
+This is a recursive algorithm for estimating the internal state of a linear dynamic system from a series of noisy measurements. It is an optimal estimator in the sense that it minimizes the estimated error covariance. The Kalman filter is a two-\/stage algorithm\+:
+\begin{DoxyEnumerate}
+\item Prediction\+: The Kalman filter produces estimates of the current state variables, along with their uncertainties. These estimates are based on system dynamics and on the previous state estimate.
+\item Update\+: The Kalman filter combines the current estimate with the new measurement information to produce an improved estimate of the current state variables along with their uncertainties. 
+\begin{DoxyParams}{Parameters}
+{\em process\+\_\+noise} & The process noise \\
+\hline
+{\em measurement\+\_\+noise} & The measurement noise \\
+\hline
+{\em input} & The input sensor data \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The filtered sensor data 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{See also}
+\href{https://en.wikipedia.org/wiki/Kalman_filter}{\texttt{ https\+://en.\+wikipedia.\+org/wiki/\+Kalman\+\_\+filter}} 
+\end{DoxySeeAlso}
+
+\end{DoxyEnumerate}\mbox{\Hypertarget{namespacefilter__utils_ab23b5b16b33c545ce7cbea6bd6eb8628}\label{namespacefilter__utils_ab23b5b16b33c545ce7cbea6bd6eb8628}} 
+\index{filter\_utils@{filter\_utils}!filterWrench@{filterWrench}}
+\index{filterWrench@{filterWrench}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{filterWrench()}{filterWrench()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void filter\+\_\+utils\+::filter\+Wrench (\begin{DoxyParamCaption}\item[{bool}]{apply\+\_\+ema,  }\item[{bool}]{apply\+\_\+bw,  }\item[{bool}]{apply\+\_\+kf,  }\item[{double \&}]{cur\+\_\+wrench,  }\item[{const double}]{deadband\+\_\+threshold,  }\item[{const double}]{alpha,  }\item[{const double}]{cut\+\_\+off\+\_\+frequency,  }\item[{const double}]{dt,  }\item[{const double}]{process\+\_\+noise,  }\item[{const double}]{measurement\+\_\+noise }\end{DoxyParamCaption})}
+
+
+
+Applies a filter to the input sensor data. 
+
+\begin{DoxyNote}{Note}
+This is for 1D wrench data (eg. Fz) 
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em apply\+\_\+ema} & Whether to apply the exponential moving average filter \\
+\hline
+{\em apply\+\_\+bw} & Whether to apply the Butterworth filter \\
+\hline
+{\em apply\+\_\+kf} & Whether to apply the Kalman filter \\
+\hline
+{\em cur\+\_\+wrench} & The current wrench data \\
+\hline
+{\em deadband\+\_\+threshold} & The deadband threshold \\
+\hline
+{\em alpha} & The smoothing factor for the EMA filter \\
+\hline
+{\em cut\+\_\+off\+\_\+frequency} & The cutoff frequency for the Butterworth filter \\
+\hline
+{\em dt} & The sampling time \\
+\hline
+{\em process\+\_\+noise} & The process noise for the Kalman filter \\
+\hline
+{\em measurement\+\_\+noise} & The measurement noise for the Kalman filter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+cur\+\_\+wrench is updated with the filtered wrench data 
+\end{DoxyPostcond}
+\mbox{\Hypertarget{namespacefilter__utils_a66d67f55b126c8d7e8e9230da5884541}\label{namespacefilter__utils_a66d67f55b126c8d7e8e9230da5884541}} 
+\index{filter\_utils@{filter\_utils}!filterWrench@{filterWrench}}
+\index{filterWrench@{filterWrench}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{filterWrench()}{filterWrench()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void filter\+\_\+utils\+::filter\+Wrench (\begin{DoxyParamCaption}\item[{bool}]{apply\+\_\+ema,  }\item[{bool}]{apply\+\_\+bw,  }\item[{bool}]{apply\+\_\+kf,  }\item[{geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&}]{wrench,  }\item[{const double}]{deadband\+\_\+threshold,  }\item[{const double}]{alpha,  }\item[{const double}]{cut\+\_\+off\+\_\+frequency,  }\item[{const double}]{dt,  }\item[{const double}]{process\+\_\+noise,  }\item[{const double}]{measurement\+\_\+noise }\end{DoxyParamCaption})}
+
+
+
+Applies a filter to the input sensor data. 
+
+\begin{DoxyNote}{Note}
+This is for 6D wrench data (eg. Fx, Fy, Fz, Tx, Ty, Tz). The 1D wrench filter is applied to each element of the wrench data. 
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em apply\+\_\+ema} & Whether to apply the exponential moving average filter \\
+\hline
+{\em apply\+\_\+bw} & Whether to apply the Butterworth filter \\
+\hline
+{\em apply\+\_\+kf} & Whether to apply the Kalman filter \\
+\hline
+{\em wrench} & The wrench data \\
+\hline
+{\em deadband\+\_\+threshold} & The deadband threshold \\
+\hline
+{\em alpha} & The smoothing factor for the EMA filter \\
+\hline
+{\em cut\+\_\+off\+\_\+frequency} & The cutoff frequency for the Butterworth filter \\
+\hline
+{\em dt} & The sampling time \\
+\hline
+{\em process\+\_\+noise} & The process noise for the Kalman filter \\
+\hline
+{\em measurement\+\_\+noise} & The measurement noise for the Kalman filter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+wrench is updated with the filtered wrench data 
+\end{DoxyPostcond}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{namespacefilter__utils_a9498c731aa75bc545d47037e02430f7d}\label{namespacefilter__utils_a9498c731aa75bc545d47037e02430f7d}} 
+\index{filter\_utils@{filter\_utils}!error\_covariance@{error\_covariance}}
+\index{error\_covariance@{error\_covariance}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{error\_covariance}{error\_covariance}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::error\+\_\+covariance = 1.\+0}
+
+\mbox{\Hypertarget{namespacefilter__utils_a68d02b352c6112fd279e16ee3ed39ae9}\label{namespacefilter__utils_a68d02b352c6112fd279e16ee3ed39ae9}} 
+\index{filter\_utils@{filter\_utils}!estimate@{estimate}}
+\index{estimate@{estimate}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{estimate}{estimate}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::estimate = 1.\+0}
+
+\mbox{\Hypertarget{namespacefilter__utils_aa3284fdf257f97c05a304e6df6b677c2}\label{namespacefilter__utils_aa3284fdf257f97c05a304e6df6b677c2}} 
+\index{filter\_utils@{filter\_utils}!prev\_value@{prev\_value}}
+\index{prev\_value@{prev\_value}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{prev\_value}{prev\_value}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::prev\+\_\+value = 0.\+0}
+
+\mbox{\Hypertarget{namespacefilter__utils_a9242a4e6d17b6f34cfd3ebdd588eac6c}\label{namespacefilter__utils_a9242a4e6d17b6f34cfd3ebdd588eac6c}} 
+\index{filter\_utils@{filter\_utils}!x1@{x1}}
+\index{x1@{x1}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{x1}{x1}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::x1 = 0.\+0}
+
+\mbox{\Hypertarget{namespacefilter__utils_a94ac423239eea4b4faa91c372489c828}\label{namespacefilter__utils_a94ac423239eea4b4faa91c372489c828}} 
+\index{filter\_utils@{filter\_utils}!x2@{x2}}
+\index{x2@{x2}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{x2}{x2}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::x2 = 0.\+0}
+
+\mbox{\Hypertarget{namespacefilter__utils_a5207bb59fce5d83c3cbfaee1866be835}\label{namespacefilter__utils_a5207bb59fce5d83c3cbfaee1866be835}} 
+\index{filter\_utils@{filter\_utils}!y1@{y1}}
+\index{y1@{y1}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{y1}{y1}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::y1 = 0.\+0}
+
+\mbox{\Hypertarget{namespacefilter__utils_a1e42b63b4c29be311f8a46d43e7a2414}\label{namespacefilter__utils_a1e42b63b4c29be311f8a46d43e7a2414}} 
+\index{filter\_utils@{filter\_utils}!y2@{y2}}
+\index{y2@{y2}!filter\_utils@{filter\_utils}}
+\doxysubsubsection{\texorpdfstring{y2}{y2}}
+{\footnotesize\ttfamily double filter\+\_\+utils\+::y2 = 0.\+0}
+

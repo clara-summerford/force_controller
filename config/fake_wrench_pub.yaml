@@ -1,0 +1,8 @@
+# Parameters for the fake wrench publisher node
+
+wrench_publisher:
+  ros__parameters:
+
+    force_z: 2.0              # Starting force_z value
+    max_threshold: 15.0       # Maximum force threshold
+    min_threshold: 5.0        # Minimum force threshold

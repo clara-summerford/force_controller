@@ -1,0 +1,797 @@
+\hypertarget{classtwist__force__controller_1_1ForceController}{}\doxysection{twist\+\_\+force\+\_\+controller\+::Force\+Controller Class Reference}
+\label{classtwist__force__controller_1_1ForceController}\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+
+
+{\ttfamily \#include $<$force\+\_\+controller.\+hpp$>$}
+
+
+
+Inheritance diagram for twist\+\_\+force\+\_\+controller\+::Force\+Controller\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=202pt]{classtwist__force__controller_1_1ForceController__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for twist\+\_\+force\+\_\+controller\+::Force\+Controller\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=202pt]{classtwist__force__controller_1_1ForceController__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a5e3671e93cfc85230864edf355b06ffb}{Force\+Controller}} ()
+\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_aa006c9d25303ecadc25ac1a2edf76a68}{set\+Target\+Force}} (const double target\+\_\+force)
+\begin{DoxyCompactList}\small\item\em Sets the target force for the controller. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ac996852b9719d72e5b389050aca0bc20}{set\+Target\+Wrench}} (const std\+::vector$<$ double $>$ \&target\+\_\+wrench)
+\begin{DoxyCompactList}\small\item\em Sets the target wrench for the controller. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_aa60fb40f27f5469345d87f46eca23346}{set\+Damping}} (const std\+::vector$<$ double $>$ \&damping)
+\begin{DoxyCompactList}\small\item\em Sets the damping for the controller. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_aef907346ccf2622abcd38f3a5b9b75b8}{set\+Stiffness}} (const std\+::vector$<$ double $>$ \&stiffness)
+\begin{DoxyCompactList}\small\item\em Sets the stiffness for the controller. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a35ffe004cb5c327b34d1e9182a185ac2}{set\+Controller\+Params}} (const std\+::vector$<$ double $>$ \&param\+\_\+val, const std\+::string \&param\+\_\+name, std\+::vector$<$ double $>$ \&controller\+\_\+param)
+\begin{DoxyCompactList}\small\item\em Sets the model parameters for the controller. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ad7cf958ab49af799ac8c1878c088e7b1}{set\+Twist\+To\+Zero}} ()
+\begin{DoxyCompactList}\small\item\em Sets \& publishes 0 twist. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a44713a03a1197015649382b6785e100a}{initialize}} ()
+\begin{DoxyCompactList}\small\item\em Grabs the parameters, sets the parameters and sets up the callbacks. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ac69193fead612490c8c2e03c3eb8f9a8}{$\sim$\+Force\+Controller}} ()
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ad10a15af580ba7ca69d5e608da5ac95e}{publish\+Twist}} ()
+\begin{DoxyCompactList}\small\item\em Publish twist\+\_\+ values for force control. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a381532de10ce449360eb0bc8f4f48ba2}{is\+Valid\+Target\+Force}} (const double \&target\+\_\+force) const
+\begin{DoxyCompactList}\small\item\em Checks to ensure the target force is valid. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a60275ba7bbc93473cb3b741e2e10ac4b}{is\+Valid\+Target\+Wrench}} (const std\+::vector$<$ double $>$ \&target\+\_\+wrench) const
+\begin{DoxyCompactList}\small\item\em Checks to ensure the target wrench is valid. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a3f608dc65927b557bf0ee523e548967d}{is\+Valid\+Sensor\+Wrench}} ()
+\begin{DoxyCompactList}\small\item\em Checks to ensure the measured sensor wrench is valid. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a483daf21edb1baf1ba41805a29bcb65c}{update\+FTCB}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr wrench)
+\begin{DoxyCompactList}\small\item\em Callback function for the wrench data subscriber. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a63f7c1b242fa37b050f33d795d145bde}{target\+Force\+CB}} (const std\+\_\+msgs\+::msg\+::\+Float64\+::\+Shared\+Ptr target\+\_\+force)
+\begin{DoxyCompactList}\small\item\em Callback function for the target force subscriber. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_aae8029fad57602655e90006955b76c6c}{target\+Wrench\+CB}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr target\+\_\+wrench)
+\begin{DoxyCompactList}\small\item\em Callback function for the target wrench subscriber. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a65858950723a574c5e9781057047aa36}{wrench\+Magnitude}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped wrench)
+\begin{DoxyCompactList}\small\item\em Computes the magnitude of the wrench. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_aa0146ed93f9f928fac175c70068fbec6}{compute\+Control\+Signal}} (const double measured\+\_\+force)
+\begin{DoxyCompactList}\small\item\em Computes the control signal based on the measured and target force. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ae425a6148eb1bce84ee70f8fdc6d8586}{compute\+Twist}} (const std\+::vector$<$ double $>$ \&measured\+\_\+wrench)
+\begin{DoxyCompactList}\small\item\em Computes the twist based on the measured and target wrench. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespacetwist__force__controller_a01730867f184999174c9b30e7d9211d4}{Dimension}} \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a3edd8c6ab3b1cec1f844f5b94c29762d}{convert\+To\+Dimension}} (const std\+::string \&dim)
+\begin{DoxyCompactList}\small\item\em Converts string to dimension enums. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\T \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_acfe649022075804e907320eed9609e8c}{clamp}} (const T \&value, const T \&min, const T \&max)
+\begin{DoxyCompactList}\small\item\em Clamps the value between the min and max values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a769d8a5f9d43501195411b38124b11e1}{cur\+\_\+wrench\+\_\+}}
+\item 
+geometry\+\_\+msgs\+::msg\+::\+Twist\+Stamped \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_add312f2f3f708a26dd80fc2897b8c717}{twist\+\_\+}}
+\item 
+rclcpp\+::\+Subscription$<$ geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped $>$\+::Shared\+Ptr \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a3a48e952f56ab120f9a47589e5920a71}{wrench\+\_\+sub\+\_\+}}
+\item 
+rclcpp\+::\+Subscription$<$ geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped $>$\+::Shared\+Ptr \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a06dbff79e1fa3742c5716b3d707fdc4c}{target\+\_\+wrench\+\_\+sub\+\_\+}}
+\item 
+rclcpp\+::\+Subscription$<$ std\+\_\+msgs\+::msg\+::\+Float64 $>$\+::Shared\+Ptr \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ab52c0c44890bb0021eaa1a3e3bcd145d}{target\+\_\+force\+\_\+sub\+\_\+}}
+\item 
+rclcpp\+::\+Publisher$<$ geometry\+\_\+msgs\+::msg\+::\+Twist\+Stamped $>$\+::Shared\+Ptr \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a205b039c2690f6beaa0855e5e634a8ef}{twist\+\_\+pub\+\_\+}}
+\item 
+rclcpp\+::\+Timer\+Base\+::\+Shared\+Ptr \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a9c49479c6ccb9f13e9db7a204a90283a}{timer\+\_\+}}
+\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a5690e1b60b4ed44c450a2a60a0270e6f}{add\+\_\+feedforward\+\_\+term\+\_\+}}
+\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a2e301307f71f550037fb3886c49dcdeb}{control\+\_\+wrench\+\_\+}}
+\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ae4eb45a3e649662199f808d5f31ddb6a}{compensate\+\_\+for\+\_\+ee\+\_\+weight\+\_\+}}
+\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a10b3a3d895db7036661955e3c97ac77a}{apply\+\_\+ema\+\_\+filter\+\_\+}}
+\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a4f4959a12f24a28f44c0453964e36ef4}{apply\+\_\+bw\+\_\+filter\+\_\+}}
+\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a1a27047e1d97a3a71b892be2f48bc730}{apply\+\_\+kf\+\_\+filter\+\_\+}}
+\item 
+bool \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a638c6b1c67e81f478b434aef76f244e3}{add\+\_\+restoring\+\_\+force\+\_\+term\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a0afe0b416e5b0f23bb2fb35af961a189}{ff\+\_\+gain\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a332d6e5b3743f3605ead0f70472c6d93}{max\+\_\+twist\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a51a53fbf1796212a936cec9813079120}{target\+\_\+force\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_af6a1d82a55d46a333c19b695e3603fab}{max\+\_\+force\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_aec1bccd4a573e4a3ad14c0e44ac7558f}{max\+\_\+torque\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ab8b200e78966cddd6efa3324341ee3f3}{deadband\+\_\+threshold\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a0d18d51d5963c7c0f0d40713dfd6f20f}{alpha\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a2e081955b5b9904ee57970ffe04e8a50}{cut\+\_\+off\+\_\+frequency\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ac12d9133107c3d17b39f0374f3ab10e5}{dt\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ae7d3fb98a32fba8d854d02c88438eded}{process\+\_\+noise\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ac10f44ff38afe0de918315cf4325fc78}{measurement\+\_\+noise\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a370fe4cf73d73bf24758b37fdd320369}{previous\+\_\+error\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a426e210e819bf83c3f0e90d98f056235}{integral\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a7168b2d1330b9bfd1e982b959f4b23ef}{kp\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a29760aac81aef70dcbf84d71594e295b}{kd\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_acdb6f7b9f6c20b3afc8e5f40fd2cc3f0}{ki\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a712e14e4785e1ad43a483f5471e26914}{prev\+\_\+time\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a34d9f4d35232bd7beb33a7377a53273f}{controller\+\_\+iter\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_aabb926edb4947b37750438bbc814b94f}{delta\+\_\+time\+\_\+}}
+\item 
+double \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a51344346b8691e4afe43504db008653b}{anti\+\_\+windup\+\_\+error\+\_\+threshold\+\_\+}}
+\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ac439fbfe74a11f1acdb0fdde67801d4a}{target\+\_\+wrench\+\_\+}}
+\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a0a13d1f6c5de7960486f9b3e72c38632}{damping\+\_\+}}
+\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_af52e8e95fc59e83200477fa6abe6686a}{stiffness\+\_\+}}
+\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a3ba40be3d0105fb6f9a508dc96a583c6}{ee\+\_\+com\+\_\+}}
+\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a03dec5279e425aa02ecfac530957f896}{displacement\+\_\+}}
+\item 
+\mbox{\hyperlink{namespacetwist__force__controller_a01730867f184999174c9b30e7d9211d4}{Dimension}} \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ae3e4a92a331e9624bdf3abf1fd20185c}{dimension\+\_\+}}
+\item 
+std\+::string \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_acc67306e5e568bbd209ef1418aca0c09}{ft\+\_\+sensor\+\_\+frame\+\_\+}}
+\item 
+std\+::string \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a26e5908ea8985b00a7ba5acfc4251488}{gravity\+\_\+frame\+\_\+}}
+\item 
+std\+::string \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a76d248e1a39476385559301bca235119}{twist\+\_\+pub\+\_\+frame\+\_\+}}
+\item 
+geometry\+\_\+msgs\+::msg\+::\+Vector3\+Stamped \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_ab7a6a8b501734139c944bab97d849446}{ee\+\_\+weight\+\_\+}}
+\item 
+std\+::unique\+\_\+ptr$<$ tf2\+\_\+ros\+::\+Buffer $>$ \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a0932058977912b354fa9ae23a90a154e}{tf\+\_\+buffer\+\_\+}}
+\item 
+std\+::shared\+\_\+ptr$<$ tf2\+\_\+ros\+::\+Transform\+Listener $>$ \mbox{\hyperlink{classtwist__force__controller_1_1ForceController_a41604bbb67f3328e6d90dd72fe94a21f}{tf\+\_\+listener\+\_\+}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a5e3671e93cfc85230864edf355b06ffb}\label{classtwist__force__controller_1_1ForceController_a5e3671e93cfc85230864edf355b06ffb}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!ForceController@{ForceController}}
+\index{ForceController@{ForceController}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{ForceController()}{ForceController()}}
+{\footnotesize\ttfamily twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::\+Force\+Controller (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ac69193fead612490c8c2e03c3eb8f9a8}\label{classtwist__force__controller_1_1ForceController_ac69193fead612490c8c2e03c3eb8f9a8}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!````~ForceController@{$\sim$ForceController}}
+\index{````~ForceController@{$\sim$ForceController}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{$\sim$ForceController()}{~ForceController()}}
+{\footnotesize\ttfamily twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::$\sim$\+Force\+Controller (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_acfe649022075804e907320eed9609e8c}\label{classtwist__force__controller_1_1ForceController_acfe649022075804e907320eed9609e8c}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!clamp@{clamp}}
+\index{clamp@{clamp}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{clamp()}{clamp()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::clamp (\begin{DoxyParamCaption}\item[{const T \&}]{value,  }\item[{const T \&}]{min,  }\item[{const T \&}]{max }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+
+
+Clamps the value between the min and max values. 
+
+\begin{DoxyNote}{Note}
+\+: This template function can be used by different data types 
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em value} & The value to be clamped \\
+\hline
+{\em min} & The minimum value \\
+\hline
+{\em max} & The maximum value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The clamped value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_aa0146ed93f9f928fac175c70068fbec6}\label{classtwist__force__controller_1_1ForceController_aa0146ed93f9f928fac175c70068fbec6}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!computeControlSignal@{computeControlSignal}}
+\index{computeControlSignal@{computeControlSignal}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{computeControlSignal()}{computeControlSignal()}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::compute\+Control\+Signal (\begin{DoxyParamCaption}\item[{const double}]{measured\+\_\+force }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Computes the control signal based on the measured and target force. 
+
+It uses a PID controller for the computation based on the force error. The PID controller is tuned using the parameters kp\+\_\+, kd\+\_\+ and ki\+\_\+. 
+\begin{DoxyParams}{Parameters}
+{\em measured\+\_\+force} & The measured force in the set dimension \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The computed twist value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ae425a6148eb1bce84ee70f8fdc6d8586}\label{classtwist__force__controller_1_1ForceController_ae425a6148eb1bce84ee70f8fdc6d8586}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!computeTwist@{computeTwist}}
+\index{computeTwist@{computeTwist}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{computeTwist()}{computeTwist()}}
+{\footnotesize\ttfamily std\+::vector$<$ double $>$ twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::compute\+Twist (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{measured\+\_\+wrench }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Computes the twist based on the measured and target wrench. 
+
+It uses a PID controller to compute the twist value based on the force error. The PID controller is tuned using the parameters kp\+\_\+, kd\+\_\+ and ki\+\_\+. \begin{DoxyNote}{Note}
+This is implemented for both 1D and 6D force control via using vectors 
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em measured\+\_\+wrench} & The measured wrench or force in the set dimension \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The computed twist as a vector. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a3edd8c6ab3b1cec1f844f5b94c29762d}\label{classtwist__force__controller_1_1ForceController_a3edd8c6ab3b1cec1f844f5b94c29762d}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!convertToDimension@{convertToDimension}}
+\index{convertToDimension@{convertToDimension}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{convertToDimension()}{convertToDimension()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacetwist__force__controller_a01730867f184999174c9b30e7d9211d4}{Dimension}} twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::convert\+To\+Dimension (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{dim }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Converts string to dimension enums. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dim} & String corresponding to the required dimension \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The enum corresponding to the string passed. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a44713a03a1197015649382b6785e100a}\label{classtwist__force__controller_1_1ForceController_a44713a03a1197015649382b6785e100a}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!initialize@{initialize}}
+\index{initialize@{initialize}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{initialize()}{initialize()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::initialize (\begin{DoxyParamCaption}\item[{void}]{ }\end{DoxyParamCaption})}
+
+
+
+Grabs the parameters, sets the parameters and sets up the callbacks. 
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a3f608dc65927b557bf0ee523e548967d}\label{classtwist__force__controller_1_1ForceController_a3f608dc65927b557bf0ee523e548967d}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!isValidSensorWrench@{isValidSensorWrench}}
+\index{isValidSensorWrench@{isValidSensorWrench}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{isValidSensorWrench()}{isValidSensorWrench()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::is\+Valid\+Sensor\+Wrench (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Checks to ensure the measured sensor wrench is valid. 
+
+It ensures the wrench doesn\textquotesingle{}t get dangerously high or isn\textquotesingle{}t zero. For high wrenches, it ensures the wrench magnitude does not exceed 90\% of given max. \begin{DoxyNote}{Note}
+. This is used for incoming force-\/torque data 
+\end{DoxyNote}
+\begin{DoxyReturn}{Returns}
+True if wrenches are valid, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a381532de10ce449360eb0bc8f4f48ba2}\label{classtwist__force__controller_1_1ForceController_a381532de10ce449360eb0bc8f4f48ba2}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!isValidTargetForce@{isValidTargetForce}}
+\index{isValidTargetForce@{isValidTargetForce}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{isValidTargetForce()}{isValidTargetForce()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::is\+Valid\+Target\+Force (\begin{DoxyParamCaption}\item[{const double \&}]{target\+\_\+force }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Checks to ensure the target force is valid. 
+
+It ensures the target force is not zero and is within the max and min force range \begin{DoxyReturn}{Returns}
+True if target force is valid, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a60275ba7bbc93473cb3b741e2e10ac4b}\label{classtwist__force__controller_1_1ForceController_a60275ba7bbc93473cb3b741e2e10ac4b}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!isValidTargetWrench@{isValidTargetWrench}}
+\index{isValidTargetWrench@{isValidTargetWrench}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{isValidTargetWrench()}{isValidTargetWrench()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::is\+Valid\+Target\+Wrench (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{target\+\_\+wrench }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Checks to ensure the target wrench is valid. 
+
+It ensures that the correct number of wrench elements are provided, that none of the target wrench values is zero and that all values are within the max and min wrench range. \begin{DoxyReturn}{Returns}
+True if target wrench is valid, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ad10a15af580ba7ca69d5e608da5ac95e}\label{classtwist__force__controller_1_1ForceController_ad10a15af580ba7ca69d5e608da5ac95e}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!publishTwist@{publishTwist}}
+\index{publishTwist@{publishTwist}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{publishTwist()}{publishTwist()}}
+{\footnotesize\ttfamily void twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::publish\+Twist (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Publish twist\+\_\+ values for force control. 
+
+It computes the desired twist based on PID control and the target force setpoint in every cycle iteration \begin{DoxyNote}{Note}
+For safety, it checks the wrench magnitude does not exceed a 90\% of given max, and clamps the twist value to the max twist value 
+\end{DoxyNote}
+\begin{DoxyPostcond}{Postcondition}
+The twist message is published 
+\end{DoxyPostcond}
+!!todo\+: remove me\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a35ffe004cb5c327b34d1e9182a185ac2}\label{classtwist__force__controller_1_1ForceController_a35ffe004cb5c327b34d1e9182a185ac2}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!setControllerParams@{setControllerParams}}
+\index{setControllerParams@{setControllerParams}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{setControllerParams()}{setControllerParams()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::set\+Controller\+Params (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{param\+\_\+val,  }\item[{const std\+::string \&}]{param\+\_\+name,  }\item[{std\+::vector$<$ double $>$ \&}]{controller\+\_\+param }\end{DoxyParamCaption})}
+
+
+
+Sets the model parameters for the controller. 
+
+It ensures the model parameters are valid before setting them 
+\begin{DoxyParams}{Parameters}
+{\em param\+\_\+value} & The model parameter value \\
+\hline
+{\em param\+\_\+name} & The model parameter name \\
+\hline
+{\em controller\+\_\+param\+\_\+} & The controller class member variable to be updated with the new parameter value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true if the model parameter is valid and set, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_aa60fb40f27f5469345d87f46eca23346}\label{classtwist__force__controller_1_1ForceController_aa60fb40f27f5469345d87f46eca23346}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!setDamping@{setDamping}}
+\index{setDamping@{setDamping}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{setDamping()}{setDamping()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::set\+Damping (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{damping }\end{DoxyParamCaption})}
+
+
+
+Sets the damping for the controller. 
+
+It ensures the damping is valid before setting it 
+\begin{DoxyParams}{Parameters}
+{\em damping} & The damping value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true if the damping is valid and set, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_aef907346ccf2622abcd38f3a5b9b75b8}\label{classtwist__force__controller_1_1ForceController_aef907346ccf2622abcd38f3a5b9b75b8}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!setStiffness@{setStiffness}}
+\index{setStiffness@{setStiffness}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{setStiffness()}{setStiffness()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::set\+Stiffness (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{stiffness }\end{DoxyParamCaption})}
+
+
+
+Sets the stiffness for the controller. 
+
+It ensures the stiffness is valid before setting it 
+\begin{DoxyParams}{Parameters}
+{\em stiffness} & The stiffness value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true if the stiffness is valid and set, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_aa006c9d25303ecadc25ac1a2edf76a68}\label{classtwist__force__controller_1_1ForceController_aa006c9d25303ecadc25ac1a2edf76a68}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!setTargetForce@{setTargetForce}}
+\index{setTargetForce@{setTargetForce}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{setTargetForce()}{setTargetForce()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::set\+Target\+Force (\begin{DoxyParamCaption}\item[{const double}]{target\+\_\+force }\end{DoxyParamCaption})}
+
+
+
+Sets the target force for the controller. 
+
+It ensures the target force is valid before setting it 
+\begin{DoxyParams}{Parameters}
+{\em target\+\_\+force} & The target force value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true if the target force is valid and set, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ac996852b9719d72e5b389050aca0bc20}\label{classtwist__force__controller_1_1ForceController_ac996852b9719d72e5b389050aca0bc20}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!setTargetWrench@{setTargetWrench}}
+\index{setTargetWrench@{setTargetWrench}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{setTargetWrench()}{setTargetWrench()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::set\+Target\+Wrench (\begin{DoxyParamCaption}\item[{const std\+::vector$<$ double $>$ \&}]{target\+\_\+wrench }\end{DoxyParamCaption})}
+
+
+
+Sets the target wrench for the controller. 
+
+It ensures the target wrench is valid before setting it 
+\begin{DoxyParams}{Parameters}
+{\em target\+\_\+wrench} & The target wrench value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Returns true if the target wrench is valid and set, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ad7cf958ab49af799ac8c1878c088e7b1}\label{classtwist__force__controller_1_1ForceController_ad7cf958ab49af799ac8c1878c088e7b1}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!setTwistToZero@{setTwistToZero}}
+\index{setTwistToZero@{setTwistToZero}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{setTwistToZero()}{setTwistToZero()}}
+{\footnotesize\ttfamily void twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::set\+Twist\+To\+Zero (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Sets \& publishes 0 twist. 
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a63f7c1b242fa37b050f33d795d145bde}\label{classtwist__force__controller_1_1ForceController_a63f7c1b242fa37b050f33d795d145bde}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!targetForceCB@{targetForceCB}}
+\index{targetForceCB@{targetForceCB}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{targetForceCB()}{targetForceCB()}}
+{\footnotesize\ttfamily void twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::target\+Force\+CB (\begin{DoxyParamCaption}\item[{const std\+\_\+msgs\+::msg\+::\+Float64\+::\+Shared\+Ptr}]{target\+\_\+force }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Callback function for the target force subscriber. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target\+\_\+force} & The updated target force value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+The target force is updated 
+\end{DoxyPostcond}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_aae8029fad57602655e90006955b76c6c}\label{classtwist__force__controller_1_1ForceController_aae8029fad57602655e90006955b76c6c}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!targetWrenchCB@{targetWrenchCB}}
+\index{targetWrenchCB@{targetWrenchCB}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{targetWrenchCB()}{targetWrenchCB()}}
+{\footnotesize\ttfamily void twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::target\+Wrench\+CB (\begin{DoxyParamCaption}\item[{const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr}]{target\+\_\+wrench }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Callback function for the target wrench subscriber. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em target\+\_\+wrench} & The updated target wrench value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+The target wrench is updated 
+\end{DoxyPostcond}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a483daf21edb1baf1ba41805a29bcb65c}\label{classtwist__force__controller_1_1ForceController_a483daf21edb1baf1ba41805a29bcb65c}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!updateFTCB@{updateFTCB}}
+\index{updateFTCB@{updateFTCB}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{updateFTCB()}{updateFTCB()}}
+{\footnotesize\ttfamily void twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::update\+FTCB (\begin{DoxyParamCaption}\item[{const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr}]{wrench }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+Callback function for the wrench data subscriber. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em wrench} & The wrench data message \\
+\hline
+\end{DoxyParams}
+\begin{DoxyPostcond}{Postcondition}
+The wrench data is updated 
+\end{DoxyPostcond}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a65858950723a574c5e9781057047aa36}\label{classtwist__force__controller_1_1ForceController_a65858950723a574c5e9781057047aa36}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!wrenchMagnitude@{wrenchMagnitude}}
+\index{wrenchMagnitude@{wrenchMagnitude}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{wrenchMagnitude()}{wrenchMagnitude()}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::wrench\+Magnitude (\begin{DoxyParamCaption}\item[{const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped}]{wrench }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [private]}}
+
+
+
+Computes the magnitude of the wrench. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em wrench} & The wrench data message \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The magnitude of the wrench 
+\end{DoxyReturn}
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a5690e1b60b4ed44c450a2a60a0270e6f}\label{classtwist__force__controller_1_1ForceController_a5690e1b60b4ed44c450a2a60a0270e6f}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!add\_feedforward\_term\_@{add\_feedforward\_term\_}}
+\index{add\_feedforward\_term\_@{add\_feedforward\_term\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{add\_feedforward\_term\_}{add\_feedforward\_term\_}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::add\+\_\+feedforward\+\_\+term\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a638c6b1c67e81f478b434aef76f244e3}\label{classtwist__force__controller_1_1ForceController_a638c6b1c67e81f478b434aef76f244e3}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!add\_restoring\_force\_term\_@{add\_restoring\_force\_term\_}}
+\index{add\_restoring\_force\_term\_@{add\_restoring\_force\_term\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{add\_restoring\_force\_term\_}{add\_restoring\_force\_term\_}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::add\+\_\+restoring\+\_\+force\+\_\+term\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a0d18d51d5963c7c0f0d40713dfd6f20f}\label{classtwist__force__controller_1_1ForceController_a0d18d51d5963c7c0f0d40713dfd6f20f}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!alpha\_@{alpha\_}}
+\index{alpha\_@{alpha\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{alpha\_}{alpha\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::alpha\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a51344346b8691e4afe43504db008653b}\label{classtwist__force__controller_1_1ForceController_a51344346b8691e4afe43504db008653b}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!anti\_windup\_error\_threshold\_@{anti\_windup\_error\_threshold\_}}
+\index{anti\_windup\_error\_threshold\_@{anti\_windup\_error\_threshold\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{anti\_windup\_error\_threshold\_}{anti\_windup\_error\_threshold\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::anti\+\_\+windup\+\_\+error\+\_\+threshold\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a4f4959a12f24a28f44c0453964e36ef4}\label{classtwist__force__controller_1_1ForceController_a4f4959a12f24a28f44c0453964e36ef4}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!apply\_bw\_filter\_@{apply\_bw\_filter\_}}
+\index{apply\_bw\_filter\_@{apply\_bw\_filter\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{apply\_bw\_filter\_}{apply\_bw\_filter\_}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::apply\+\_\+bw\+\_\+filter\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a10b3a3d895db7036661955e3c97ac77a}\label{classtwist__force__controller_1_1ForceController_a10b3a3d895db7036661955e3c97ac77a}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!apply\_ema\_filter\_@{apply\_ema\_filter\_}}
+\index{apply\_ema\_filter\_@{apply\_ema\_filter\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{apply\_ema\_filter\_}{apply\_ema\_filter\_}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::apply\+\_\+ema\+\_\+filter\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a1a27047e1d97a3a71b892be2f48bc730}\label{classtwist__force__controller_1_1ForceController_a1a27047e1d97a3a71b892be2f48bc730}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!apply\_kf\_filter\_@{apply\_kf\_filter\_}}
+\index{apply\_kf\_filter\_@{apply\_kf\_filter\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{apply\_kf\_filter\_}{apply\_kf\_filter\_}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::apply\+\_\+kf\+\_\+filter\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ae4eb45a3e649662199f808d5f31ddb6a}\label{classtwist__force__controller_1_1ForceController_ae4eb45a3e649662199f808d5f31ddb6a}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!compensate\_for\_ee\_weight\_@{compensate\_for\_ee\_weight\_}}
+\index{compensate\_for\_ee\_weight\_@{compensate\_for\_ee\_weight\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{compensate\_for\_ee\_weight\_}{compensate\_for\_ee\_weight\_}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::compensate\+\_\+for\+\_\+ee\+\_\+weight\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a2e301307f71f550037fb3886c49dcdeb}\label{classtwist__force__controller_1_1ForceController_a2e301307f71f550037fb3886c49dcdeb}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!control\_wrench\_@{control\_wrench\_}}
+\index{control\_wrench\_@{control\_wrench\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{control\_wrench\_}{control\_wrench\_}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::control\+\_\+wrench\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a34d9f4d35232bd7beb33a7377a53273f}\label{classtwist__force__controller_1_1ForceController_a34d9f4d35232bd7beb33a7377a53273f}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!controller\_iter\_@{controller\_iter\_}}
+\index{controller\_iter\_@{controller\_iter\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{controller\_iter\_}{controller\_iter\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::controller\+\_\+iter\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a769d8a5f9d43501195411b38124b11e1}\label{classtwist__force__controller_1_1ForceController_a769d8a5f9d43501195411b38124b11e1}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!cur\_wrench\_@{cur\_wrench\_}}
+\index{cur\_wrench\_@{cur\_wrench\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{cur\_wrench\_}{cur\_wrench\_}}
+{\footnotesize\ttfamily geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::cur\+\_\+wrench\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a2e081955b5b9904ee57970ffe04e8a50}\label{classtwist__force__controller_1_1ForceController_a2e081955b5b9904ee57970ffe04e8a50}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!cut\_off\_frequency\_@{cut\_off\_frequency\_}}
+\index{cut\_off\_frequency\_@{cut\_off\_frequency\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{cut\_off\_frequency\_}{cut\_off\_frequency\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::cut\+\_\+off\+\_\+frequency\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a0a13d1f6c5de7960486f9b3e72c38632}\label{classtwist__force__controller_1_1ForceController_a0a13d1f6c5de7960486f9b3e72c38632}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!damping\_@{damping\_}}
+\index{damping\_@{damping\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{damping\_}{damping\_}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::damping\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ab8b200e78966cddd6efa3324341ee3f3}\label{classtwist__force__controller_1_1ForceController_ab8b200e78966cddd6efa3324341ee3f3}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!deadband\_threshold\_@{deadband\_threshold\_}}
+\index{deadband\_threshold\_@{deadband\_threshold\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{deadband\_threshold\_}{deadband\_threshold\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::deadband\+\_\+threshold\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_aabb926edb4947b37750438bbc814b94f}\label{classtwist__force__controller_1_1ForceController_aabb926edb4947b37750438bbc814b94f}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!delta\_time\_@{delta\_time\_}}
+\index{delta\_time\_@{delta\_time\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{delta\_time\_}{delta\_time\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::delta\+\_\+time\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ae3e4a92a331e9624bdf3abf1fd20185c}\label{classtwist__force__controller_1_1ForceController_ae3e4a92a331e9624bdf3abf1fd20185c}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!dimension\_@{dimension\_}}
+\index{dimension\_@{dimension\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{dimension\_}{dimension\_}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacetwist__force__controller_a01730867f184999174c9b30e7d9211d4}{Dimension}} twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::dimension\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a03dec5279e425aa02ecfac530957f896}\label{classtwist__force__controller_1_1ForceController_a03dec5279e425aa02ecfac530957f896}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!displacement\_@{displacement\_}}
+\index{displacement\_@{displacement\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{displacement\_}{displacement\_}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::displacement\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ac12d9133107c3d17b39f0374f3ab10e5}\label{classtwist__force__controller_1_1ForceController_ac12d9133107c3d17b39f0374f3ab10e5}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!dt\_@{dt\_}}
+\index{dt\_@{dt\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{dt\_}{dt\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::dt\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a3ba40be3d0105fb6f9a508dc96a583c6}\label{classtwist__force__controller_1_1ForceController_a3ba40be3d0105fb6f9a508dc96a583c6}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!ee\_com\_@{ee\_com\_}}
+\index{ee\_com\_@{ee\_com\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{ee\_com\_}{ee\_com\_}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::ee\+\_\+com\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ab7a6a8b501734139c944bab97d849446}\label{classtwist__force__controller_1_1ForceController_ab7a6a8b501734139c944bab97d849446}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!ee\_weight\_@{ee\_weight\_}}
+\index{ee\_weight\_@{ee\_weight\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{ee\_weight\_}{ee\_weight\_}}
+{\footnotesize\ttfamily geometry\+\_\+msgs\+::msg\+::\+Vector3\+Stamped twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::ee\+\_\+weight\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a0afe0b416e5b0f23bb2fb35af961a189}\label{classtwist__force__controller_1_1ForceController_a0afe0b416e5b0f23bb2fb35af961a189}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!ff\_gain\_@{ff\_gain\_}}
+\index{ff\_gain\_@{ff\_gain\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{ff\_gain\_}{ff\_gain\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::ff\+\_\+gain\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_acc67306e5e568bbd209ef1418aca0c09}\label{classtwist__force__controller_1_1ForceController_acc67306e5e568bbd209ef1418aca0c09}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!ft\_sensor\_frame\_@{ft\_sensor\_frame\_}}
+\index{ft\_sensor\_frame\_@{ft\_sensor\_frame\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{ft\_sensor\_frame\_}{ft\_sensor\_frame\_}}
+{\footnotesize\ttfamily std\+::string twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::ft\+\_\+sensor\+\_\+frame\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a26e5908ea8985b00a7ba5acfc4251488}\label{classtwist__force__controller_1_1ForceController_a26e5908ea8985b00a7ba5acfc4251488}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!gravity\_frame\_@{gravity\_frame\_}}
+\index{gravity\_frame\_@{gravity\_frame\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{gravity\_frame\_}{gravity\_frame\_}}
+{\footnotesize\ttfamily std\+::string twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::gravity\+\_\+frame\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a426e210e819bf83c3f0e90d98f056235}\label{classtwist__force__controller_1_1ForceController_a426e210e819bf83c3f0e90d98f056235}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!integral\_@{integral\_}}
+\index{integral\_@{integral\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{integral\_}{integral\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::integral\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a29760aac81aef70dcbf84d71594e295b}\label{classtwist__force__controller_1_1ForceController_a29760aac81aef70dcbf84d71594e295b}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!kd\_@{kd\_}}
+\index{kd\_@{kd\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{kd\_}{kd\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::kd\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_acdb6f7b9f6c20b3afc8e5f40fd2cc3f0}\label{classtwist__force__controller_1_1ForceController_acdb6f7b9f6c20b3afc8e5f40fd2cc3f0}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!ki\_@{ki\_}}
+\index{ki\_@{ki\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{ki\_}{ki\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::ki\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a7168b2d1330b9bfd1e982b959f4b23ef}\label{classtwist__force__controller_1_1ForceController_a7168b2d1330b9bfd1e982b959f4b23ef}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!kp\_@{kp\_}}
+\index{kp\_@{kp\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{kp\_}{kp\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::kp\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_af6a1d82a55d46a333c19b695e3603fab}\label{classtwist__force__controller_1_1ForceController_af6a1d82a55d46a333c19b695e3603fab}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!max\_force\_@{max\_force\_}}
+\index{max\_force\_@{max\_force\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{max\_force\_}{max\_force\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::max\+\_\+force\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_aec1bccd4a573e4a3ad14c0e44ac7558f}\label{classtwist__force__controller_1_1ForceController_aec1bccd4a573e4a3ad14c0e44ac7558f}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!max\_torque\_@{max\_torque\_}}
+\index{max\_torque\_@{max\_torque\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{max\_torque\_}{max\_torque\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::max\+\_\+torque\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a332d6e5b3743f3605ead0f70472c6d93}\label{classtwist__force__controller_1_1ForceController_a332d6e5b3743f3605ead0f70472c6d93}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!max\_twist\_@{max\_twist\_}}
+\index{max\_twist\_@{max\_twist\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{max\_twist\_}{max\_twist\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::max\+\_\+twist\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ac10f44ff38afe0de918315cf4325fc78}\label{classtwist__force__controller_1_1ForceController_ac10f44ff38afe0de918315cf4325fc78}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!measurement\_noise\_@{measurement\_noise\_}}
+\index{measurement\_noise\_@{measurement\_noise\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{measurement\_noise\_}{measurement\_noise\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::measurement\+\_\+noise\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a712e14e4785e1ad43a483f5471e26914}\label{classtwist__force__controller_1_1ForceController_a712e14e4785e1ad43a483f5471e26914}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!prev\_time\_@{prev\_time\_}}
+\index{prev\_time\_@{prev\_time\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{prev\_time\_}{prev\_time\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::prev\+\_\+time\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a370fe4cf73d73bf24758b37fdd320369}\label{classtwist__force__controller_1_1ForceController_a370fe4cf73d73bf24758b37fdd320369}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!previous\_error\_@{previous\_error\_}}
+\index{previous\_error\_@{previous\_error\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{previous\_error\_}{previous\_error\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::previous\+\_\+error\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ae7d3fb98a32fba8d854d02c88438eded}\label{classtwist__force__controller_1_1ForceController_ae7d3fb98a32fba8d854d02c88438eded}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!process\_noise\_@{process\_noise\_}}
+\index{process\_noise\_@{process\_noise\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{process\_noise\_}{process\_noise\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::process\+\_\+noise\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_af52e8e95fc59e83200477fa6abe6686a}\label{classtwist__force__controller_1_1ForceController_af52e8e95fc59e83200477fa6abe6686a}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!stiffness\_@{stiffness\_}}
+\index{stiffness\_@{stiffness\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{stiffness\_}{stiffness\_}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::stiffness\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a51a53fbf1796212a936cec9813079120}\label{classtwist__force__controller_1_1ForceController_a51a53fbf1796212a936cec9813079120}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!target\_force\_@{target\_force\_}}
+\index{target\_force\_@{target\_force\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{target\_force\_}{target\_force\_}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::target\+\_\+force\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ab52c0c44890bb0021eaa1a3e3bcd145d}\label{classtwist__force__controller_1_1ForceController_ab52c0c44890bb0021eaa1a3e3bcd145d}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!target\_force\_sub\_@{target\_force\_sub\_}}
+\index{target\_force\_sub\_@{target\_force\_sub\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{target\_force\_sub\_}{target\_force\_sub\_}}
+{\footnotesize\ttfamily rclcpp\+::\+Subscription$<$std\+\_\+msgs\+::msg\+::\+Float64$>$\+::Shared\+Ptr twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::target\+\_\+force\+\_\+sub\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_ac439fbfe74a11f1acdb0fdde67801d4a}\label{classtwist__force__controller_1_1ForceController_ac439fbfe74a11f1acdb0fdde67801d4a}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!target\_wrench\_@{target\_wrench\_}}
+\index{target\_wrench\_@{target\_wrench\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{target\_wrench\_}{target\_wrench\_}}
+{\footnotesize\ttfamily std\+::vector$<$double$>$ twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::target\+\_\+wrench\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a06dbff79e1fa3742c5716b3d707fdc4c}\label{classtwist__force__controller_1_1ForceController_a06dbff79e1fa3742c5716b3d707fdc4c}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!target\_wrench\_sub\_@{target\_wrench\_sub\_}}
+\index{target\_wrench\_sub\_@{target\_wrench\_sub\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{target\_wrench\_sub\_}{target\_wrench\_sub\_}}
+{\footnotesize\ttfamily rclcpp\+::\+Subscription$<$geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped$>$\+::Shared\+Ptr twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::target\+\_\+wrench\+\_\+sub\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a0932058977912b354fa9ae23a90a154e}\label{classtwist__force__controller_1_1ForceController_a0932058977912b354fa9ae23a90a154e}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!tf\_buffer\_@{tf\_buffer\_}}
+\index{tf\_buffer\_@{tf\_buffer\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{tf\_buffer\_}{tf\_buffer\_}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$tf2\+\_\+ros\+::\+Buffer$>$ twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::tf\+\_\+buffer\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a41604bbb67f3328e6d90dd72fe94a21f}\label{classtwist__force__controller_1_1ForceController_a41604bbb67f3328e6d90dd72fe94a21f}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!tf\_listener\_@{tf\_listener\_}}
+\index{tf\_listener\_@{tf\_listener\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{tf\_listener\_}{tf\_listener\_}}
+{\footnotesize\ttfamily std\+::shared\+\_\+ptr$<$tf2\+\_\+ros\+::\+Transform\+Listener$>$ twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::tf\+\_\+listener\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a9c49479c6ccb9f13e9db7a204a90283a}\label{classtwist__force__controller_1_1ForceController_a9c49479c6ccb9f13e9db7a204a90283a}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!timer\_@{timer\_}}
+\index{timer\_@{timer\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{timer\_}{timer\_}}
+{\footnotesize\ttfamily rclcpp\+::\+Timer\+Base\+::\+Shared\+Ptr twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::timer\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_add312f2f3f708a26dd80fc2897b8c717}\label{classtwist__force__controller_1_1ForceController_add312f2f3f708a26dd80fc2897b8c717}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!twist\_@{twist\_}}
+\index{twist\_@{twist\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{twist\_}{twist\_}}
+{\footnotesize\ttfamily geometry\+\_\+msgs\+::msg\+::\+Twist\+Stamped twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::twist\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a205b039c2690f6beaa0855e5e634a8ef}\label{classtwist__force__controller_1_1ForceController_a205b039c2690f6beaa0855e5e634a8ef}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!twist\_pub\_@{twist\_pub\_}}
+\index{twist\_pub\_@{twist\_pub\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{twist\_pub\_}{twist\_pub\_}}
+{\footnotesize\ttfamily rclcpp\+::\+Publisher$<$geometry\+\_\+msgs\+::msg\+::\+Twist\+Stamped$>$\+::Shared\+Ptr twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::twist\+\_\+pub\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a76d248e1a39476385559301bca235119}\label{classtwist__force__controller_1_1ForceController_a76d248e1a39476385559301bca235119}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!twist\_pub\_frame\_@{twist\_pub\_frame\_}}
+\index{twist\_pub\_frame\_@{twist\_pub\_frame\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{twist\_pub\_frame\_}{twist\_pub\_frame\_}}
+{\footnotesize\ttfamily std\+::string twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::twist\+\_\+pub\+\_\+frame\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{classtwist__force__controller_1_1ForceController_a3a48e952f56ab120f9a47589e5920a71}\label{classtwist__force__controller_1_1ForceController_a3a48e952f56ab120f9a47589e5920a71}} 
+\index{twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}!wrench\_sub\_@{wrench\_sub\_}}
+\index{wrench\_sub\_@{wrench\_sub\_}!twist\_force\_controller::ForceController@{twist\_force\_controller::ForceController}}
+\doxysubsubsection{\texorpdfstring{wrench\_sub\_}{wrench\_sub\_}}
+{\footnotesize\ttfamily rclcpp\+::\+Subscription$<$geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped$>$\+::Shared\+Ptr twist\+\_\+force\+\_\+controller\+::\+Force\+Controller\+::wrench\+\_\+sub\+\_\+\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/hawkeye/force\+\_\+control/src/force\+\_\+controller/include/force\+\_\+controller/\mbox{\hyperlink{force__controller_8hpp}{force\+\_\+controller.\+hpp}}\item 
+/home/hawkeye/force\+\_\+control/src/force\+\_\+controller/src/\mbox{\hyperlink{force__controller_8cpp}{force\+\_\+controller.\+cpp}}\end{DoxyCompactItemize}

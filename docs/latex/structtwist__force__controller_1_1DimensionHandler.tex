@@ -1,0 +1,83 @@
+\hypertarget{structtwist__force__controller_1_1DimensionHandler}{}\doxysection{twist\+\_\+force\+\_\+controller\+::Dimension\+Handler Struct Reference}
+\label{structtwist__force__controller_1_1DimensionHandler}\index{twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}}
+
+
+{\ttfamily \#include $<$force\+\_\+controller.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structtwist__force__controller_1_1DimensionHandler_a33eb3e21e1cdf076e5ff055b8951126b}{Dimension\+Handler}} (const \mbox{\hyperlink{namespacetwist__force__controller_a01730867f184999174c9b30e7d9211d4}{Dimension}} \&dimension)
+\item 
+bool \mbox{\hyperlink{structtwist__force__controller_1_1DimensionHandler_a4831b8f1c8a3a56b729c437234469720}{is\+Linear}} () const
+\item 
+bool \mbox{\hyperlink{structtwist__force__controller_1_1DimensionHandler_a353b59023b1f7305b53ab42379b6c082}{is\+Angular}} () const
+\item 
+void \mbox{\hyperlink{structtwist__force__controller_1_1DimensionHandler_a09397daf7e4ad2e7258ee79a52ca8b30}{set\+Twist\+Value}} (const double val, geometry\+\_\+msgs\+::msg\+::\+Twist \&twist) const
+\item 
+double \mbox{\hyperlink{structtwist__force__controller_1_1DimensionHandler_a14f5779f9817b317e2a4d1356504f467}{get\+Wrench\+Value}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&cur\+\_\+wrench) const
+\end{DoxyCompactItemize}
+\doxysubsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacetwist__force__controller_a01730867f184999174c9b30e7d9211d4}{Dimension}} \mbox{\hyperlink{structtwist__force__controller_1_1DimensionHandler_a4aee09bc64de907bf13978f43343182a}{dim}}
+\item 
+bool \mbox{\hyperlink{structtwist__force__controller_1_1DimensionHandler_a5f414fd95bf1240cf5e8a92b77e10167}{is\+\_\+linear}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{structtwist__force__controller_1_1DimensionHandler_a33eb3e21e1cdf076e5ff055b8951126b}\label{structtwist__force__controller_1_1DimensionHandler_a33eb3e21e1cdf076e5ff055b8951126b}} 
+\index{twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}!DimensionHandler@{DimensionHandler}}
+\index{DimensionHandler@{DimensionHandler}!twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}}
+\doxysubsubsection{\texorpdfstring{DimensionHandler()}{DimensionHandler()}}
+{\footnotesize\ttfamily twist\+\_\+force\+\_\+controller\+::\+Dimension\+Handler\+::\+Dimension\+Handler (\begin{DoxyParamCaption}\item[{const \mbox{\hyperlink{namespacetwist__force__controller_a01730867f184999174c9b30e7d9211d4}{Dimension}} \&}]{dimension }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{structtwist__force__controller_1_1DimensionHandler_a14f5779f9817b317e2a4d1356504f467}\label{structtwist__force__controller_1_1DimensionHandler_a14f5779f9817b317e2a4d1356504f467}} 
+\index{twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}!getWrenchValue@{getWrenchValue}}
+\index{getWrenchValue@{getWrenchValue}!twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}}
+\doxysubsubsection{\texorpdfstring{getWrenchValue()}{getWrenchValue()}}
+{\footnotesize\ttfamily double twist\+\_\+force\+\_\+controller\+::\+Dimension\+Handler\+::get\+Wrench\+Value (\begin{DoxyParamCaption}\item[{const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&}]{cur\+\_\+wrench }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{structtwist__force__controller_1_1DimensionHandler_a353b59023b1f7305b53ab42379b6c082}\label{structtwist__force__controller_1_1DimensionHandler_a353b59023b1f7305b53ab42379b6c082}} 
+\index{twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}!isAngular@{isAngular}}
+\index{isAngular@{isAngular}!twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}}
+\doxysubsubsection{\texorpdfstring{isAngular()}{isAngular()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Dimension\+Handler\+::is\+Angular (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structtwist__force__controller_1_1DimensionHandler_a4831b8f1c8a3a56b729c437234469720}\label{structtwist__force__controller_1_1DimensionHandler_a4831b8f1c8a3a56b729c437234469720}} 
+\index{twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}!isLinear@{isLinear}}
+\index{isLinear@{isLinear}!twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}}
+\doxysubsubsection{\texorpdfstring{isLinear()}{isLinear()}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Dimension\+Handler\+::is\+Linear (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{structtwist__force__controller_1_1DimensionHandler_a09397daf7e4ad2e7258ee79a52ca8b30}\label{structtwist__force__controller_1_1DimensionHandler_a09397daf7e4ad2e7258ee79a52ca8b30}} 
+\index{twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}!setTwistValue@{setTwistValue}}
+\index{setTwistValue@{setTwistValue}!twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}}
+\doxysubsubsection{\texorpdfstring{setTwistValue()}{setTwistValue()}}
+{\footnotesize\ttfamily void twist\+\_\+force\+\_\+controller\+::\+Dimension\+Handler\+::set\+Twist\+Value (\begin{DoxyParamCaption}\item[{const double}]{val,  }\item[{geometry\+\_\+msgs\+::msg\+::\+Twist \&}]{twist }\end{DoxyParamCaption}) const}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{structtwist__force__controller_1_1DimensionHandler_a4aee09bc64de907bf13978f43343182a}\label{structtwist__force__controller_1_1DimensionHandler_a4aee09bc64de907bf13978f43343182a}} 
+\index{twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}!dim@{dim}}
+\index{dim@{dim}!twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}}
+\doxysubsubsection{\texorpdfstring{dim}{dim}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespacetwist__force__controller_a01730867f184999174c9b30e7d9211d4}{Dimension}} twist\+\_\+force\+\_\+controller\+::\+Dimension\+Handler\+::dim\hspace{0.3cm}{\ttfamily [private]}}
+
+\mbox{\Hypertarget{structtwist__force__controller_1_1DimensionHandler_a5f414fd95bf1240cf5e8a92b77e10167}\label{structtwist__force__controller_1_1DimensionHandler_a5f414fd95bf1240cf5e8a92b77e10167}} 
+\index{twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}!is\_linear@{is\_linear}}
+\index{is\_linear@{is\_linear}!twist\_force\_controller::DimensionHandler@{twist\_force\_controller::DimensionHandler}}
+\doxysubsubsection{\texorpdfstring{is\_linear}{is\_linear}}
+{\footnotesize\ttfamily bool twist\+\_\+force\+\_\+controller\+::\+Dimension\+Handler\+::is\+\_\+linear\hspace{0.3cm}{\ttfamily [private]}}
+
+
+
+The documentation for this struct was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/hawkeye/force\+\_\+control/src/force\+\_\+controller/include/force\+\_\+controller/\mbox{\hyperlink{force__controller_8hpp}{force\+\_\+controller.\+hpp}}\item 
+/home/hawkeye/force\+\_\+control/src/force\+\_\+controller/src/\mbox{\hyperlink{force__controller_8cpp}{force\+\_\+controller.\+cpp}}\end{DoxyCompactItemize}

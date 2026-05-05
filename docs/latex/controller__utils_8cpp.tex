@@ -1,0 +1,75 @@
+\hypertarget{controller__utils_8cpp}{}\doxysection{/home/hawkeye/force\+\_\+control/src/force\+\_\+controller/src/controller\+\_\+utils.cpp File Reference}
+\label{controller__utils_8cpp}\index{/home/hawkeye/force\_control/src/force\_controller/src/controller\_utils.cpp@{/home/hawkeye/force\_control/src/force\_controller/src/controller\_utils.cpp}}
+{\ttfamily \#include \char`\"{}force\+\_\+controller/controller\+\_\+utils.\+hpp\char`\"{}}\newline
+{\ttfamily \#include $<$rclcpp/rclcpp.\+hpp$>$}\newline
+{\ttfamily \#include $<$tf2\+\_\+geometry\+\_\+msgs/tf2\+\_\+geometry\+\_\+msgs.\+hpp$>$}\newline
+Include dependency graph for controller\+\_\+utils.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{controller__utils_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespacefilter__utils}{filter\+\_\+utils}}
+\item 
+ \mbox{\hyperlink{namespacecontroller__utils}{controller\+\_\+utils}}
+\item 
+ \mbox{\hyperlink{namespaceft__sensor__utils}{ft\+\_\+sensor\+\_\+utils}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_ad55ca1fc2755595a8409edbf1a424c85}{filter\+\_\+utils\+::apply\+Deadband}} (double input, double deadband)
+\begin{DoxyCompactList}\small\item\em Applies a deadband to the input sensor data. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefilter__utils_aace6e4ad0c3940676dc1c385e7ae7b9a}{filter\+\_\+utils\+::apply\+EMAFilter}} (double alpha, double input)
+\begin{DoxyCompactList}\small\item\em Exponential moving average filter for sensor data. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefilter__utils_a259c317d5b5ec7b67ca530f58ef12b50}{filter\+\_\+utils\+::apply\+Butterworth\+Filter}} (double cut\+\_\+off\+\_\+freq, double dt, double input)
+\begin{DoxyCompactList}\small\item\em Butterworth filter for sensor data. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{namespacefilter__utils_ac7439547d9611fb4dc8f85cfe55dab30}{filter\+\_\+utils\+::apply\+Kalman\+Filter}} (double process\+\_\+noise, double measurement\+\_\+noise, double input)
+\begin{DoxyCompactList}\small\item\em Kalman filter for sensor data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacefilter__utils_ab23b5b16b33c545ce7cbea6bd6eb8628}{filter\+\_\+utils\+::filter\+Wrench}} (bool apply\+\_\+ema, bool apply\+\_\+bw, bool apply\+\_\+kf, double \&cur\+\_\+wrench, const double deadband\+\_\+threshold, const double alpha, const double cut\+\_\+off\+\_\+frequency, const double dt, const double process\+\_\+noise, const double measurement\+\_\+noise)
+\begin{DoxyCompactList}\small\item\em Applies a filter to the input sensor data. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacefilter__utils_a66d67f55b126c8d7e8e9230da5884541}{filter\+\_\+utils\+::filter\+Wrench}} (bool apply\+\_\+ema, bool apply\+\_\+bw, bool apply\+\_\+kf, geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&wrench, const double deadband\+\_\+threshold, const double alpha, const double cut\+\_\+off\+\_\+frequency, const double dt, const double process\+\_\+noise, const double measurement\+\_\+noise)
+\begin{DoxyCompactList}\small\item\em Applies a filter to the input sensor data. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{namespacecontroller__utils_ac4007c39d14f8398f9f8b806f6925924}{controller\+\_\+utils\+::is\+Wrench\+Nan}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr wrench)
+\begin{DoxyCompactList}\small\item\em Checks whether the passed value is a valid number value. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{namespacecontroller__utils_a313011f5051589a9b261a565bfc904e5}{controller\+\_\+utils\+::is\+Wrench\+Nan}} (const std\+::vector$<$ double $>$ \&wrench)
+\begin{DoxyCompactList}\small\item\em Checks whether the passed value is a valid number value. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{namespacecontroller__utils_a9b120d6e4c3f8d2652161df2a73f802b}{controller\+\_\+utils\+::to\+Wrench\+Vector}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped\+::\+Shared\+Ptr wrench)
+\begin{DoxyCompactList}\small\item\em Converts a wrench message to a wrench vector. \end{DoxyCompactList}\item 
+std\+::vector$<$ double $>$ \mbox{\hyperlink{namespacecontroller__utils_aa4c07b040091d95797575dc6bf83e9f7}{controller\+\_\+utils\+::to\+Wrench\+Vector}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&wrench)
+\begin{DoxyCompactList}\small\item\em Converts a wrench message to a wrench vector. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{namespacecontroller__utils_ab8ea7e08a97f2e6d52e272bb4d69de23}{controller\+\_\+utils\+::is\+In\+Range}} (const double value, const double min, const double max)
+\begin{DoxyCompactList}\small\item\em Checks whether the passed value is within the specified range. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{namespacecontroller__utils_aa84fc3d324ab08d0965ccfba2894503c}{controller\+\_\+utils\+::is\+Wrench\+In\+Range}} (const std\+::vector$<$ double $>$ \&wrench, const double max\+\_\+force, const double max\+\_\+torque)
+\begin{DoxyCompactList}\small\item\em Checks whether the passed wrench is within the specified range. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacecontroller__utils_a0c241f81bcfa5690085a60eaa11ba3e3}{controller\+\_\+utils\+::to\+Twist\+Msg}} (geometry\+\_\+msgs\+::msg\+::\+Twist\+Stamped \&twist, const std\+::vector$<$ double $>$ \&value)
+\begin{DoxyCompactList}\small\item\em Converts a wrench vector to a twist message. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespacecontroller__utils_a1c73263d327a85baf4444cb19e13cda1}{controller\+\_\+utils\+::print\+Wrench}} (const std\+::vector$<$ double $>$ \&wrench, const std\+::string \&logger\+\_\+name, const std\+::string \&msg)
+\begin{DoxyCompactList}\small\item\em Prints the wrench vector. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{namespaceft__sensor__utils_a796e0315f8d2b5ca4a80fdd4f3fd49e5}{ft\+\_\+sensor\+\_\+utils\+::transform\+Vector}} (geometry\+\_\+msgs\+::msg\+::\+Vector3\+Stamped \&vector, const tf2\+\_\+ros\+::\+Buffer \&tf\+\_\+buffer, const std\+::string \&to\+\_\+frame, const std\+::string \&from\+\_\+frame)
+\begin{DoxyCompactList}\small\item\em Transforms the input vector from the source frame to the target frame. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceft__sensor__utils_a5a2265e203e468bd33aa6eb5d01139c1}{ft\+\_\+sensor\+\_\+utils\+::get\+EEWeight\+Wrench}} (geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&ee\+\_\+weight\+\_\+wrench, const geometry\+\_\+msgs\+::msg\+::\+Vector3\+Stamped \&ee\+\_\+weight, const std\+::vector$<$ double $>$ \&ee\+\_\+com)
+\begin{DoxyCompactList}\small\item\em Calculates the weight wrench of the end effector. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{namespaceft__sensor__utils_a2cadc2d0aeec35d101f3daa20338f34e}{ft\+\_\+sensor\+\_\+utils\+::bias\+Wrench}} (const geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&ee\+\_\+weight\+\_\+wrench, geometry\+\_\+msgs\+::msg\+::\+Wrench\+Stamped \&cur\+\_\+wrench)
+\begin{DoxyCompactList}\small\item\em Applies a bias to the input wrench data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_aa3284fdf257f97c05a304e6df6b677c2}{filter\+\_\+utils\+::prev\+\_\+value}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a9242a4e6d17b6f34cfd3ebdd588eac6c}{filter\+\_\+utils\+::x1}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a94ac423239eea4b4faa91c372489c828}{filter\+\_\+utils\+::x2}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a5207bb59fce5d83c3cbfaee1866be835}{filter\+\_\+utils\+::y1}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a1e42b63b4c29be311f8a46d43e7a2414}{filter\+\_\+utils\+::y2}} = 0.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a9498c731aa75bc545d47037e02430f7d}{filter\+\_\+utils\+::error\+\_\+covariance}} = 1.\+0
+\item 
+double \mbox{\hyperlink{namespacefilter__utils_a68d02b352c6112fd279e16ee3ed39ae9}{filter\+\_\+utils\+::estimate}} = 1.\+0
+\end{DoxyCompactItemize}
