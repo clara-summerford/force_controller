@@ -36,9 +36,6 @@ bool isInRange(const double value, const double min, const double max) {
 bool isWrenchInRange(const std::vector<double>& wrench, const double max_force,
                      const double max_torque) {
   double min_force = -max_force;
-  std::cout << "min force in controller utils: " << min_force << std::endl;
-  std::cout << "max force in controller utils: " << max_force << std::endl;
-
   double min_torque = -max_torque;
 
   if (!isInRange(wrench.at(0), min_force, max_force) ||
