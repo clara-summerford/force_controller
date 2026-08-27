@@ -1,5 +1,5 @@
 #include "force_controller/force_controller.hpp"
-#include "force_controller/controller_utils.hpp"
+#include "force_controller/utils/controller_utils.hpp"
 
 namespace twist_force_controller {
 
@@ -599,6 +599,11 @@ std::vector<double> ForceController::computeTwist(
         error_signal = computeControlSignal(dim_handler.getWrenchValue(cur_wrench_));
       }
     }
+    // else if (use_adaptive_k_)
+    // {
+    //   /* code */
+    // }
+    
     else {
       error_signal = kp_ * computeForceError(measured_wrench).at(i);
     }

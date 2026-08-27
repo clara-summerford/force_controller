@@ -4,15 +4,21 @@
   <name>force_controller</name>
   <version>1.0.0</version>
   <description>Controls the force at the end-effector using twists</description>
-  <maintainer email="efakita@utexas.edu">efakita</maintainer>
+  <maintainer email="clara.summerford@my.utexas.edu">clara-admin</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
 
   <build_depend>rclcpp</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>tf2_geometry_msgs</build_depend>
+  <depend>sensor_msgs</depend>
+  <depend>action_msgs</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

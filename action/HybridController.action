@@ -1,0 +1,10 @@
+geometry_msgs/Wrench wrench_setpoint
+float64 max_force
+float64 timeout_sec
+---
+bool success
+string message
+---
+geometry_msgs/Wrench current_wrench
+sensor_msgs/JointState current_joint_state
+float64 elapsed_time

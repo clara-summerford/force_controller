@@ -1,5 +1,5 @@
-#include "force_controller/wrench_filters.hpp"
-#include "force_controller/controller_utils.hpp"
+#include "force_controller/utils/wrench_filters.hpp"
+#include "force_controller/utils/controller_utils.hpp"
 
 namespace filter_utils {
 

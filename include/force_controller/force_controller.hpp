@@ -47,7 +47,7 @@
 #include <geometry_msgs/msg/vector3_stamped.hpp>
 #include <geometry_msgs/msg/wrench_stamped.hpp>
 #include <std_msgs/msg/float64.hpp>
-#include "force_controller/wrench_filters.hpp"
+#include "force_controller/utils/wrench_filters.hpp"
 
 namespace twist_force_controller {
 const size_t NUM_DIMS{6};      // 3 translational, 3 rotational dimensions
