@@ -3,51 +3,14 @@
 
 namespace twist_force_controller {
 
+using namespace controller_utils;
+
 constexpr auto ROS_LOG_THROTTLE_PERIOD =
     std::chrono::milliseconds(1000).count();
 
-DimensionHandler::DimensionHandler(const Dimension& dimension)
-    : dim(dimension) {
-  is_linear = (dim == Dimension::LinX || dim == Dimension::LinY ||
-               dim == Dimension::LinZ);
-}
-
-void DimensionHandler::setTwistValue(const double val,
-                                     geometry_msgs::msg::Twist& twist) const {
-  if (is_linear) {
-    switch (dim) {
-      case Dimension::LinX:
-        twist.linear.x = val;
-        break;
-      case Dimension::LinY:
-        twist.linear.y = val;
-        break;
-      case Dimension::LinZ:
-        twist.linear.z = val;
-        break;
-    }
-  }
-}
-
-double DimensionHandler::getWrenchValue(
-    const geometry_msgs::msg::WrenchStamped& cur_wrench) const {
-  if (is_linear) {
-    switch (dim) {
-      case Dimension::LinX:
-        return cur_wrench.wrench.force.x;
-      case Dimension::LinY:
-        return cur_wrench.wrench.force.y;
-      case Dimension::LinZ:
-        return cur_wrench.wrench.force.z;
-    }
-  }
-  return 0.0;
-}
-
 // Constructor
 ForceController::ForceController(const rclcpp::Node::SharedPtr& node)
-    : Node("force_controller"),
-      previous_error_(0.0),
+    : previous_error_(0.0),
       integral_(0.0),
       prev_time_(0.0),
       delta_time_(0.0),
@@ -55,23 +18,8 @@ ForceController::ForceController(const rclcpp::Node::SharedPtr& node)
 
 // Destructor
 ForceController::~ForceController() {
-  setTwistToZero();
-  if(wrench_sub_){wrench_sub_.reset();}
-  if(target_wrench_sub_){target_wrench_sub_.reset();}
-  if(target_force_sub_) {target_force_sub_.reset(); }
-  if(twist_pub_){twist_pub_.reset();}
-  if(wrench_pub_){wrench_pub_.reset();}
   if(timer_) {timer_->cancel(); timer_.reset(); } 
   if(node_){node_.reset(); }
-}
-
-Dimension ForceController::convertToDimension(const std::string& dim) {
-  if (dim == "x" || dim == "X")
-    return Dimension::LinX;
-  else if (dim == "y" || dim == "Y")
-    return Dimension::LinY;
-  else
-    return Dimension::LinZ;
 }
 
 bool ForceController::setTargetForce(const double target_force) {
@@ -222,12 +170,6 @@ bool ForceController::initialize(const ForceControllerParams& params) {
 
     displacement_.assign(NUM_DIMS, 0.0);  // Init displacement vector to 6D
 
-    target_wrench_sub_ = /*Setup the callback*/
-        node_->create_subscription<geometry_msgs::msg::WrenchStamped>(
-            force_controller_params_.target_wrench_sub_topic,
-            rclcpp::QoS(rclcpp::KeepLast(10)),
-            std::bind(&ForceController::targetWrenchCB, this,
-                      std::placeholders::_1));
   } else {
     if (!setTargetForce(force_controller_params_.force_setpoint)) {
       return false;
@@ -242,12 +184,6 @@ bool ForceController::initialize(const ForceControllerParams& params) {
     }
 
     displacement_.assign(1, 0.0);  // Init displacement vector to 1D
-
-    target_force_sub_ = node_->create_subscription<std_msgs::msg::Float64>(
-        force_controller_params_.target_force_sub_topic,
-        rclcpp::QoS(rclcpp::KeepLast(10)),
-        std::bind(&ForceController::targetForceCB, this,
-                  std::placeholders::_1));
   }
 
   // Set the maximum twist
@@ -278,18 +214,10 @@ bool ForceController::initialize(const ForceControllerParams& params) {
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(node_->get_clock());
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
   }
-
-  twist_pub_ = node_->create_publisher<geometry_msgs::msg::TwistStamped>(
-      force_controller_params_.pub_topic, rclcpp::QoS(rclcpp::KeepLast(10)));
-
-  // For demonstration purposes in RQT
-  wrench_pub_ = node_->create_publisher<geometry_msgs::msg::WrenchStamped>(
-      "wrench_pub_topic", rclcpp::QoS(rclcpp::KeepLast(10)));
-
   return true;
 }
 
-void ForceController::updateFTCB(
+void ForceController::updateWrench(
     const geometry_msgs::msg::WrenchStamped::SharedPtr wrench) {
   // Verify that the wrench data is valid
   if (controller_utils::isWrenchNan(wrench)) {
@@ -326,9 +254,6 @@ void ForceController::updateFTCB(
           }
   }
 
-  // Publish the tared wrench data for visualization
-  wrench_pub_->publish(cur_wrench_);
-
   if (compensate_for_ee_weight_) {
     // Get the updated ee_weight in the ft_sensor_frame
     if (!ft_sensor_utils::transformVector(ee_weight_, *tf_buffer_,
@@ -342,24 +267,6 @@ void ForceController::updateFTCB(
 
     // Bias the sensor data by the EE weight
     ft_sensor_utils::biasWrench(ee_weight_wrench, cur_wrench_);
-  }
-}
-
-void ForceController::targetForceCB(
-    const std_msgs::msg::Float64::SharedPtr target_force) {
-  if (!setTargetForce(target_force->data)) {
-    RCLCPP_WARN(node_->get_logger(),
-                "Invalid target force value received. Ignoring input.");
-    return;
-  }
-}
-
-void ForceController::targetWrenchCB(
-    const geometry_msgs::msg::WrenchStamped::SharedPtr target_wrench) {
-  if (!setTargetWrench(controller_utils::toWrenchVector(target_wrench))) {
-    RCLCPP_WARN(node_->get_logger(),
-                "Invalid target wrench value received. Ignoring input.");
-    return;
   }
 }
 
@@ -401,6 +308,10 @@ bool ForceController::isValidTargetWrench(
                                          max_torque_)) {
     RCLCPP_WARN(node_->get_logger(),
                 "Target wrench value out of range. Ignoring input.");
+    std::cout << "target wrench [0]: " << target_wrench[0] << std::endl;
+    std::cout << "target wrench [2]: " << target_wrench[2] << std::endl;
+    std::cout << "max force: " << max_force_ << std::endl;
+
     return false;
   }
 
@@ -438,16 +349,20 @@ bool ForceController::isValidSensorWrench() {
   return true;
 }
 
-void ForceController::publishTwist() {
+geometry_msgs::msg::TwistStamped ForceController::computeTwist() {
   // Stop if very close to max force/torque or zero wrench
   if (!isValidSensorWrench()) {
-    std::cout << "Invalid sensor wrench from force controller!" << std::endl;
+    RCLCPP_ERROR(node_->get_logger(), "Invalid sensor wrench from force controller!");
     setTwistToZero();
-    return;
+    return twist_;
   }
   
-  if(!tare_computed_) return;
-
+  if(!tare_computed_) {
+    RCLCPP_ERROR(node_->get_logger(), "FT tare not computed.");
+    // setTwistToZero();
+    return twist_; // return stale twist value or 0?
+  }
+    
   filter_utils::FilterUtils filter;  // Create a filter object
 
   if (!control_wrench_) {  // Simple, 1D case
@@ -460,7 +375,7 @@ void ForceController::publishTwist() {
     filter.filterWrench(cur_wrench, filter_params_);
 
     // Compute the desired twist
-    double twist_desired = computeTwist({cur_wrench}).at(0);
+    double twist_desired = computeAdmittanceLaw({cur_wrench}).at(0);
 
     // Clamp the desired twist to the twist max
     twist_desired = fabs(twist_desired) > max_twist_
@@ -476,7 +391,7 @@ void ForceController::publishTwist() {
 
     // Compute the desired twist
     std::vector<double> twist_desired =
-        computeTwist(controller_utils::toWrenchVector(cur_wrench_));
+        computeAdmittanceLaw(controller_utils::toWrenchVector(cur_wrench_));
 
     // Clamp the desired twist to the twist max
     for (size_t i = 0; i < NUM_DIMS; i++) {
@@ -490,22 +405,15 @@ void ForceController::publishTwist() {
     controller_utils::toTwistMsg(twist_, twist_desired);
   }
 
-  // Publish the desired twist
-  twist_.header.stamp = node_->get_clock()->now();
-  twist_.header.frame_id = twist_pub_frame_;
-
-  if (!force_controller_params_.get_controller_twist) {
-    twist_pub_->publish(twist_);
-  }
+  return twist_;
 }
 
 void ForceController::setTwistToZero() {
   twist_.twist = geometry_msgs::msg::Twist();
   twist_.header.stamp = node_->get_clock()->now();
-  if(twist_pub_)twist_pub_->publish(twist_);
 }
 
-double ForceController::computeControlSignal(const double measured_force) {
+double ForceController::computePIDControlSignal(const double measured_force) {
   /*PID control: The proportional term adjusts the control action based on the
      current error, the integral term integrates past errors to eliminate
      steady-state errors, and the derivative term anticipates future errors
@@ -565,7 +473,7 @@ std::vector<double> ForceController::computeForceError(
   return force_error;
 }
 
-std::vector<double> ForceController::computeTwist(
+std::vector<double> ForceController::computeAdmittanceLaw(
     const std::vector<double>& measured_wrench) {
   /*
   Assumption: The robot is in full contact with the environment.
@@ -589,30 +497,33 @@ std::vector<double> ForceController::computeTwist(
     double error_signal{0.0};
     if (use_PID_) { 
       if(control_wrench_){
-        target_force_ = target_wrench_.at(i);
-        error_signal = computeControlSignal(measured_wrench.at(i));
-        // std::cout << "error signal: " << error_signal << std::endl;
 
+        // 6D PID case
+        target_force_ = target_wrench_.at(i);
+        error_signal = computePIDControlSignal(measured_wrench.at(i));
       }
-      else{
+      else { 
+        
+        // 1D PID case
         DimensionHandler dim_handler(dimension_);
-        error_signal = computeControlSignal(dim_handler.getWrenchValue(cur_wrench_));
+        error_signal = computePIDControlSignal(dim_handler.getWrenchValue(cur_wrench_));
       }
-    }
-    // else if (use_adaptive_k_)
-    // {
-    //   /* code */
-    // }
-    
+    } 
     else {
+
+      // 1D/6D P case
       error_signal = kp_ * computeForceError(measured_wrench).at(i);
     }
 
+    // else (use_adaptive_k_)
+    // {
+    //   /* code */
+    // }
+
+    // Admittance law (mass-damper)
     twist.at(i) = -1 *
                   (error_signal - (stiffness_.at(i) * displacement_.at(i))) /
                   damping_.at(i);
-      // std::cout << "raw impedance twist " << twist.at(i) << std::endl;
-
     
 
     // Cap the twist value to avoid excessively large updates

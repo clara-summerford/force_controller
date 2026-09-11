@@ -17,7 +17,7 @@
 namespace hybrid_multidim_control
 {
 /**
- * @brief TODO(...)
+ * @brief Hybrid controller class built on admittance twist-based force controller. 
  */
 
 
@@ -107,7 +107,6 @@ protected:
   rclcpp::Node::SharedPtr getNode() const {
       rclcpp::Node::SharedPtr node = node_ptr_.lock();
       if (!node) {
-          // RCLCPP_ERROR(get_logger(), "The ROS node has gone out of scope. You are operating with a null pointer!");
           std::cout << "The ROS node has gone out of scope. You are operating with a null pointer!" << std::endl; // FIX THIS
       }
       return node;

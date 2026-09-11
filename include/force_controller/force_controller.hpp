@@ -48,73 +48,18 @@
 #include <geometry_msgs/msg/wrench_stamped.hpp>
 #include <std_msgs/msg/float64.hpp>
 #include "force_controller/utils/wrench_filters.hpp"
+#include "force_controller/utils/param_handler.hpp"
+#include "force_controller/utils/controller_utils.hpp"
+
 
 namespace twist_force_controller {
+
+
 const size_t NUM_DIMS{6};      // 3 translational, 3 rotational dimensions
 const double TIME_STEP{0.01};  // 10 milliseconds
 
-enum Dimension {
-  LinX,
-  LinY,
-  LinZ,
-};
 
-struct DimensionHandler {
-  DimensionHandler(const Dimension& dimension);
-
-  // Returns the correct dimension enum
-  bool isLinear() const { return is_linear; };
-
-  bool isAngular() const { return !is_linear; };
-
-  // Sets the correct field in the twist message
-  void setTwistValue(const double val, geometry_msgs::msg::Twist& twist) const;
-
-  // Returns the correct measured wrench value based on the dimension
-  double getWrenchValue(
-      const geometry_msgs::msg::WrenchStamped& cur_wrench) const;
-
- private:
-  Dimension dim;
-  bool is_linear;
-};
-
-struct ForceControllerParams {
-  /**
-   * @brief This struct holds the parameters for the force controller.
-   * @details The parameters are set and stored in a struct for use in the force
-   * controller object instantiation in the MoveIt Pro behavior. For a
-   * comprehensive overview of each parameter, refer to the
-   * force_controller_params.yaml file. Parameters relevant to the
-   * one-dimensional force control scenario are made accessible via the behavior
-   * UI for dynamic configuration during runtime. Other parameters are
-   * designated as constants set by the behavior. To modify parameters, they can
-   * be adjusted either through MoveIt Pro's UI or by directly editing the
-   * corresponding C++ file and subsequently recompiling the package.
-   */
-  double /*Behavior input port params: */ force_setpoint, kp, kd, ki, ee_weight,
-      /*Controller config file params: */ ff_gain, max_twist, max_force,
-      max_torque, anti_windup_error_threshold;
-
-  std::string
-      /*Behavior input port params: */ ft_sensor_frame,
-      gravity_frame, twist_pub_frame, dimension_str, pub_topic,
-      /*Controller config file params: */ target_wrench_sub_topic,
-      target_force_sub_topic, wrench_sub_topic;
-
-  std::vector<double>
-      /*Behavior input port params: */ damping_1D, stiffness_1D, ee_com,
-      /*Controller config file params: */ wrench_setpoint, stiffness_6D,
-      damping_6D;
-
-  bool /*Behavior input port param: */ get_controller_twist,
-      /*Controller config file params: */ has_ft_sensor, control_wrench,
-      compensate_for_ee_weight, add_restoring_force_term, use_PID;
-
-  filter_utils::FilterWrenchParams filter_params;
-};
-
-class ForceController : public rclcpp::Node {
+class ForceController {
  public:
   ForceController(const rclcpp::Node::SharedPtr& node);
 
@@ -175,26 +120,15 @@ class ForceController : public rclcpp::Node {
   /** @brief Sets & publishes 0 twist. */
   void setTwistToZero();
 
-  /** @brief Sets the subscriber for the wrench data*/
-  void setWrenchSubscription(
-      const rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr&
-          wrench_sub) {
-    wrench_sub_ = wrench_sub;
-  }
-
   /** @brief Sets the timer for the controller*/
   void setTimer(const rclcpp::TimerBase::SharedPtr& timer) { timer_ = timer; }
 
-  /** @brief  Triggers the private publishTwist function*/
-  void triggerPublishTwist() {
-    publishTwist();  // Call the private publishTwist function internally
-  }
-
-  /** @brief Triggers the private updateFTCB function */
-  void triggerUpdateFTCB(
-      const geometry_msgs::msg::WrenchStamped::SharedPtr wrench) {
-    updateFTCB(wrench);
-  }
+  /**
+   * @brief Callback function for the wrench data subscriber
+   * @param wrench The wrench data message
+   * @post The wrench data is updated
+   */
+  void updateWrench(const geometry_msgs::msg::WrenchStamped::SharedPtr wrench);
 
   /** @brief Triggers the private targetForceCB function */
   void triggerStopMotion() { setTwistToZero(); }
@@ -204,22 +138,14 @@ class ForceController : public rclcpp::Node {
   bool initialize(const ForceControllerParams& params);
 
   /**
-   * @brief Gets the twist value for force control
-   * @return The twist value for force control
+   * @brief Publish twist_ values for force control
+   * @details It computes the desired twist based on PID control and the target
+   * force setpoint in every cycle iteration
+    @note For safety, it checks the wrench magnitude does not exceed a 90% of
+      given max, and clamps the twist value to the max twist value
+   * @post The twist message is published
    */
-  geometry_msgs::msg::TwistStamped getForceControlTwist() {
-    publishTwist(); // Call the private publishTwist function internally
-    return twist_;
-  }
-
-  /**
-   * @brief Gets the wrench value for force control
-   * @return The wrench value for force control
-   */
-  geometry_msgs::msg::WrenchStamped getForceControlWrench() {
-    publishTwist(); // Call the private publishTwist function internally
-    return filtered_wrench_;
-  }
+  geometry_msgs::msg::TwistStamped computeTwist();
 
   /**
    * @brief Checks to ensure the measured sensor wrench is valid
@@ -231,18 +157,9 @@ class ForceController : public rclcpp::Node {
    */
   bool isValidSensorWrench();
 
-  ~ForceController() override;
+  ~ForceController();
 
  private:
-  /**
-   * @brief Publish twist_ values for force control
-   * @details It computes the desired twist based on PID control and the target
-   * force setpoint in every cycle iteration
-    @note For safety, it checks the wrench magnitude does not exceed a 90% of
-      given max, and clamps the twist value to the max twist value
-   * @post The twist message is published
-   */
-  void publishTwist();
 
   /**
    * @brief Checks to ensure the target force is valid
@@ -260,28 +177,6 @@ class ForceController : public rclcpp::Node {
    * @return True if target wrench is valid, false otherwise
    */
   bool isValidTargetWrench(const std::vector<double>& target_wrench) const;
-
-  /**
-   * @brief Callback function for the wrench data subscriber
-   * @param wrench The wrench data message
-   * @post The wrench data is updated
-   */
-  void updateFTCB(const geometry_msgs::msg::WrenchStamped::SharedPtr wrench);
-
-  /**
-   * @brief Callback function for the target force subscriber
-   * @param target_force The updated target force value
-   * @post The target force is updated
-   */
-  void targetForceCB(const std_msgs::msg::Float64::SharedPtr target_force);
-
-  /**
-   * @brief Callback function for the target wrench subscriber
-   * @param target_wrench The updated target wrench value
-   * @post The target wrench is updated
-   */
-  void targetWrenchCB(
-      const geometry_msgs::msg::WrenchStamped::SharedPtr target_wrench);
 
   /**
    * @brief Computes the magnitude of the wrench
@@ -303,7 +198,7 @@ class ForceController : public rclcpp::Node {
    * @param measured_force The measured force in the set dimension
    * @return The computed twist value
    */
-  double computeControlSignal(const double measured_force);
+  double computePIDControlSignal(const double measured_force);
 
   /**
    * @brief Computes the force error based on the measured force and target
@@ -324,14 +219,7 @@ class ForceController : public rclcpp::Node {
    * @param measured_wrench The measured wrench or force in the set dimension
    * @return The computed twist as a vector.
    */
-  std::vector<double> computeTwist(const std::vector<double>& measured_wrench);
-
-  /**
-   * @brief Converts string to dimension enums
-   * @param dim String corresponding to the required dimension
-   * @return The enum corresponding to the string passed.
-   */
-  Dimension convertToDimension(const std::string& dim);
+  std::vector<double> computeAdmittanceLaw(const std::vector<double>& measured_wrench);
 
   /**
    * @brief Clamps the value between the min and max values
@@ -350,13 +238,6 @@ class ForceController : public rclcpp::Node {
   geometry_msgs::msg::Wrench avg_wrench_;
   geometry_msgs::msg::TwistStamped twist_;
 
-  rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr
-      wrench_sub_,
-      target_wrench_sub_;
-  rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr target_force_sub_;
-  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr twist_pub_;
-  rclcpp::Publisher<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_pub_;
-
   rclcpp::TimerBase::SharedPtr timer_;
 
   bool control_wrench_, compensate_for_ee_weight_, use_PID_;
@@ -370,7 +251,7 @@ class ForceController : public rclcpp::Node {
   std::vector<double> target_wrench_, damping_, stiffness_, ee_com_,
       displacement_;
 
-  Dimension dimension_;
+  controller_utils::Dimension dimension_;
 
   std::string ft_sensor_frame_, gravity_frame_, twist_pub_frame_;
 

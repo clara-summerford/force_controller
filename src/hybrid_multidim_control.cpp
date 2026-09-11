@@ -23,7 +23,7 @@ HybridMultidimControl::HybridMultidimControl(
 
   tf_buffer_(tf_buffer),
   node_ptr_(node_ptr)
-
+  
 { // Retrieve ROS node from blackboard TO DOOOOOOOOOO
   config.blackboard->get("node", node_);
 }
@@ -265,17 +265,7 @@ void HybridMultidimControl::setWrenchValue(
   } else {
     hybrid_multidim_utils::toWrenchMsg(wrench, wrench_set);
   }
-
-  // RCLCPP_INFO(kLogger, "Target wrench force: x: %f y: %f z: %f r: %f p: %f y: %f",
-  //   wrench.wrench.force.x,
-  //   wrench.wrench.force.y,
-  //   wrench.wrench.force.z,
-  //   wrench.wrench.torque.x,
-  //   wrench.wrench.torque.y,
-  //   wrench.wrench.torque.z
-  // );
 }
-
 
 void HybridMultidimControl::setTwistValue(
     geometry_msgs::msg::TwistStamped &twist) {
@@ -416,7 +406,7 @@ BT::NodeStatus HybridMultidimControl::onStart()
   }
 
   // Create the wrench subscription
-  force_controller_->setWrenchSubscription(
+  force_controller_->setWrenchSubscription(  
       getNode()
           ->create_subscription<geometry_msgs::msg::WrenchStamped>(
               force_controller_params_->wrench_sub_topic,
@@ -508,31 +498,9 @@ void HybridMultidimControl::checkEndEffectorPose() {
 
   // publish target wrench
   geometry_msgs::msg::WrenchStamped target_wrench;
-  // target_wrench.header.stamp = getNode()->now();
-  // target_wrench.header.frame_id = force_controller_params_->twist_pub_frame;
 
   setWrenchValue(target_wrench);
-
-
-  // RCLCPP_WARN(kLogger, "Target wrench frame_id: '%s'", target_wrench.header.frame_id.c_str());
-  // RCLCPP_WARN(kLogger, "Target wrench stamp: '%d'", target_wrench.header.stamp.sec);
-
   wrench_pub_->publish(target_wrench);
-
-
-  // debugging
-  // RCLCPP_WARN(kLogger, "Joint size: %zu", current_joint_state_->position.size());
-  // std::vector<double> values;
-  // robot_state_->copyJointGroupPositions(joint_model_group_, values);
-  // RCLCPP_WARN(kLogger, "Joint count: %zu", values.size());
-
-  // std::cout << "JointState names:" << std::endl;
-  // for (const auto &n : current_joint_state_->name)
-  // std::cout << n << std::endl;
-
-  // std::cout << "MoveIt group names:" << std::endl;
-  // for (const auto &n : joint_model_group_->getVariableNames())
-  //   std::cout << n << std::endl;
 
   const Eigen::Isometry3d &end_effector_state =
       robot_state_->getGlobalLinkTransform(
@@ -575,18 +543,6 @@ void HybridMultidimControl::checkEndEffectorPose() {
     distance_moved = hybrid_multidim_utils::calculateDistanceMoved(current_pose, initial_pose_);
     publishTwist(); // logic for stopping twist is wrapped in setTwistValue
   }
-  RCLCPP_WARN(kLogger, "Distance moved: %f m", distance_moved);
-
-  RCLCPP_WARN(kLogger, "current EE x: %f y: %f z: %f",
-      current_pose.position.x,
-      current_pose.position.y,
-      current_pose.position.z);
-
-  RCLCPP_WARN(kLogger, "initial EE: x: %f y: %f z: %f",
-      initial_pose_.position.x,
-      initial_pose_.position.y,
-      initial_pose_.position.z);
-
 }
 
 bool HybridMultidimControl::updateInitialPose() {
@@ -671,41 +627,14 @@ void HybridMultidimControl::publishTwist() {
     // Add the twist value to the force controller's twist
     geometry_msgs::msg::TwistStamped force_controller_twist =
         force_controller_->getForceControlTwist();
-    RCLCPP_WARN(kLogger, "motion twist commanded x: %f y: %f z: %f r: %f p: %f y: %f",
-      twist.twist.linear.x,
-      twist.twist.linear.y,
-      twist.twist.linear.z,
-      twist.twist.angular.x,
-      twist.twist.angular.y,
-      twist.twist.angular.z);
 
-    RCLCPP_WARN(kLogger, "force twist commanded x: %f y: %f z: %f r: %f p: %f y: %f",
-      force_controller_twist.twist.linear.x,
-      force_controller_twist.twist.linear.y,
-      force_controller_twist.twist.linear.z,
-      force_controller_twist.twist.angular.x,
-      force_controller_twist.twist.angular.y,
-      force_controller_twist.twist.angular.z);
     twist.twist = hybrid_multidim_utils::addTwists(
-        twist.twist, force_controller_twist.twist); // Add the twist values
+      twist.twist, force_controller_twist.twist); // Add the twist values
   }
-
 
   // Rotate the linear twist 90 deg about the Z axis for Servo in MoveItPro v5.0
   const int rotation_angle{-90};
   rotateLinearTwist(twist.twist, 'z', rotation_angle);
-
-  // RCLCPP_WARN(kLogger, "twist commanded x: %f y: %f z: %f r: %f p: %f y: %f",
-  //     twist.twist.linear.x,
-  //     twist.twist.linear.y,
-  //     twist.twist.linear.z,
-  //     twist.twist.angular.x,
-  //     twist.twist.angular.y,
-  //     twist.twist.angular.z);
-
-  // RCLCPP_WARN(kLogger, "Twist frame_id: '%s'", twist.header.frame_id.c_str());
-  // RCLCPP_WARN(kLogger, "Twist stamp: '%d'", twist.header.stamp.sec);
-
 
   // Publish the twist message
   twist_pub_->publish(twist);

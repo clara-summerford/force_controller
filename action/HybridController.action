@@ -1,6 +1,7 @@
 geometry_msgs/Wrench wrench_setpoint
-float64 max_force
-float64 timeout_sec
+float64 twist_val
+float64 distance_delta
+string dimension    
 ---
 bool success
 string message

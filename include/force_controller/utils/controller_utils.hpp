@@ -4,7 +4,41 @@
 #include <geometry_msgs/msg/twist_stamped.hpp>
 #include <geometry_msgs/msg/vector3_stamped.hpp>
 #include <geometry_msgs/msg/wrench_stamped.hpp>
+
 namespace controller_utils {
+
+enum Dimension {
+  LinX,
+  LinY,
+  LinZ,
+};
+
+struct DimensionHandler {
+  DimensionHandler(const Dimension& dimension);
+
+  // Returns the correct dimension enum
+  bool isLinear() const { return is_linear; };
+
+  bool isAngular() const { return !is_linear; };
+
+  // Sets the correct field in the twist message
+  void setTwistValue(const double val, geometry_msgs::msg::Twist& twist) const;
+
+  // Returns the correct measured wrench value based on the dimension
+  double getWrenchValue(
+      const geometry_msgs::msg::WrenchStamped& cur_wrench) const;
+
+ private:
+  Dimension dim;
+  bool is_linear;
+};
+
+/**
+ * @brief Converts string to dimension enums
+ * @param dim String corresponding to the required dimension
+ * @return The enum corresponding to the string passed.
+ */
+Dimension convertToDimension(const std::string& dim);
 
 /**
  * @brief Checks whether the passed value is a valid number value

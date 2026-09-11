@@ -1,7 +1,57 @@
 #include "force_controller/utils/controller_utils.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>  // tf2::doTransform
+
+
 namespace controller_utils {
+
+DimensionHandler::DimensionHandler(const Dimension& dimension)
+  : dim(dimension) {
+is_linear = (dim == Dimension::LinX || dim == Dimension::LinY ||
+              dim == Dimension::LinZ);
+}
+
+void DimensionHandler::setTwistValue(const double val,
+                                    geometry_msgs::msg::Twist& twist) const {
+if (is_linear) {
+  switch (dim) {
+    case Dimension::LinX:
+      twist.linear.x = val;
+      break;
+    case Dimension::LinY:
+      twist.linear.y = val;
+      break;
+    case Dimension::LinZ:
+      twist.linear.z = val;
+      break;
+  }
+}
+}
+
+double DimensionHandler::getWrenchValue(
+  const geometry_msgs::msg::WrenchStamped& cur_wrench) const {
+if (is_linear) {
+  switch (dim) {
+    case Dimension::LinX:
+      return cur_wrench.wrench.force.x;
+    case Dimension::LinY:
+      return cur_wrench.wrench.force.y;
+    case Dimension::LinZ:
+      return cur_wrench.wrench.force.z;
+  }
+}
+return 0.0;
+}
+
+Dimension convertToDimension(const std::string& dim) {
+  if (dim == "x" || dim == "X")
+    return Dimension::LinX;
+  else if (dim == "y" || dim == "Y")
+    return Dimension::LinY;
+  else
+    return Dimension::LinZ;
+}
+
 bool isWrenchNan(const geometry_msgs::msg::WrenchStamped::SharedPtr wrench) {
   return std::isnan(wrench->wrench.force.x) ||
          std::isnan(wrench->wrench.force.y) ||
