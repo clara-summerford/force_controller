@@ -23,6 +23,7 @@ find_package(Eigen3 REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(action_msgs REQUIRED)        
 find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 
@@ -35,6 +36,7 @@ set(
   rclcpp
   rclcpp_action
   rclcpp_components
+  std_srvs
   geometry_msgs
   sensor_msgs
   tf2_geometry_msgs

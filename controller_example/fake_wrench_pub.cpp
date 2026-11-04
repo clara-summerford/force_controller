@@ -47,7 +47,7 @@ class WrenchPublisherNode : public rclcpp::Node {
     wrench_pub_ =
         create_publisher<geometry_msgs::msg::WrenchStamped>("/robotiq_force_torque_sensor_broadcaster/wrench", 10);
     timer_ = this->create_wall_timer(
-        std::chrono::milliseconds(1000),
+        std::chrono::milliseconds(50),
         std::bind(&WrenchPublisherNode::publishWrench, this));
   }
 

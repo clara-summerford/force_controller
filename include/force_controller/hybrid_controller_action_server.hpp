@@ -7,6 +7,10 @@
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/twist_stamped.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
+#include <std_srvs/srv/trigger.hpp>
+#include <tf2_eigen/tf2_eigen.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+
 
 #include <moveit/robot_model/robot_model.h>
 #include <moveit/robot_model_loader/robot_model_loader.h>
@@ -29,8 +33,6 @@ public:
 
 
 private:
-  rclcpp_action::Server<HybridController>::SharedPtr action_server_;
-
   /**
    * @brief Function to handle incoming goals from the action request from the client. 
    * @return Returns response to action client through the action once complete. 
@@ -126,6 +128,18 @@ private:
   void setWrenchValue(geometry_msgs::msg::WrenchStamped &wrench);
 
   /**
+   * @brief Waits a specified period for FT tare to complete before continuing 
+   * into control loop.
+   * 
+   * @param goal_handle 
+   * @param timeout Time in seconds that can elapse to attempt to tare FT sensor. 
+   * @return bool
+   */
+  bool waitForTare(const std::shared_ptr<GoalHandleHybridController> goal_handle, 
+                    std::chrono::seconds timeout); 
+
+
+  /**
    * @brief Checks if the dimension is valid.
    * @param dimension The dimension to be checked.
    * @return bool
@@ -176,10 +190,10 @@ private:
   bool isAngular();
 
   /**
-   * @brief Initializes the robot model loader.
-   * @return BT::NodeStatus
+   * @brief Initializes the robot model loader AND robot model/kinematics.
+   * @return bool Result of initializations. 
    */
-  bool initializeRobotModelLoader();
+  bool initializeRobotModel();
 
   /**
    * @brief Callback function to update the joint state data.
@@ -209,28 +223,36 @@ private:
 
 
   // Private member variables 
+  rclcpp::Node::SharedPtr node_;
   rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::CallbackGroup::SharedPtr action_cb_group_, client_cb_group_;
+  rclcpp_action::Server<HybridController>::SharedPtr action_server_;
+  rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr servo_client_;
+
+
   rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr twist_pub_;
   rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr wrench_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
 
-  std::chrono::time_point<std::chrono::steady_clock> start_time_;
+
   moveit::core::RobotStatePtr robot_state_;
   const moveit::core::JointModelGroup *joint_model_group_;
   std::shared_ptr<robot_model_loader::RobotModelLoader> robot_model_loader_;
-  rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr
-      joint_state_sub_;
   sensor_msgs::msg::JointState::SharedPtr current_joint_state_{nullptr};
   
+
+  std::chrono::time_point<std::chrono::steady_clock> start_time_;
   geometry_msgs::msg::Pose initial_pose_;
   bool initial_pose_set_{false};
   bool distance_reached_{false};
+
 
   double angular_twist_val_{0.2}; // RPY angular twist value
   double t_; // time difference for nonlinear paths
   rclcpp::Time path_start_time_; // start time for nonlinear paths
 
-  rclcpp::Node::SharedPtr node_;
 
+  bool wrench_data_received_{false};
   bool force_controller_initialized_ = false;
   std::shared_ptr<twist_force_controller::ForceController> force_controller_;
   twist_force_controller::ForceControllerParams force_controller_params_;

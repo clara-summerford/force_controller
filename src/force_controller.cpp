@@ -5,7 +5,7 @@ namespace twist_force_controller {
 
 using namespace controller_utils;
 
-constexpr auto ROS_LOG_THROTTLE_PERIOD =
+constexpr auto ROS_THROTTLE_PERIOD =
     std::chrono::milliseconds(1000).count();
 
 // Constructor
@@ -40,7 +40,7 @@ bool ForceController::setTargetWrench(
   // Check if target_wrench is valid
   if (isValidTargetWrench(target_wrench)) {
     target_wrench_ = target_wrench; /*Update the target wrench*/
-    controller_utils::logWrenchVector(target_wrench_, node_->get_name(),
+    controller_utils::logWrenchVector(target_wrench_, node_,
                                       "Target wrench set to");
   } else {
     RCLCPP_ERROR(node_->get_logger(), "Invalid target wrench value");
@@ -109,7 +109,6 @@ bool ForceController::setMaxTwist(const double max_twist) {
 }
 
 bool ForceController::initialize(const ForceControllerParams& params) {
-  RCLCPP_INFO(node_->get_logger(), "Initializing force controller node . . .");
 
   force_controller_params_ = params;
 
@@ -134,7 +133,7 @@ bool ForceController::initialize(const ForceControllerParams& params) {
   gravity_frame_ = force_controller_params_.gravity_frame;
   twist_pub_frame_ = force_controller_params_.twist_pub_frame;
   compensate_for_ee_weight_ = force_controller_params_.compensate_for_ee_weight;
-  use_PID_ = force_controller_params_.use_PID;
+  use_pid_ = force_controller_params_.use_pid;
   filter_params_.deadband_threshold =
       force_controller_params_.filter_params.deadband_threshold;
   filter_params_.apply_ema_filter =
@@ -201,6 +200,7 @@ bool ForceController::initialize(const ForceControllerParams& params) {
     // Get the EE weight in the gravitational frame
     ee_weight_.vector.z = -1 * force_controller_params_.ee_weight;
 
+    std::cout << "compensating for ee weight" << std::endl;
     // Get and validate the EE CoM
     ee_com_ = force_controller_params_.ee_com;
     const int com_dim{3};
@@ -218,43 +218,34 @@ bool ForceController::initialize(const ForceControllerParams& params) {
 }
 
 void ForceController::updateWrench(
-    const geometry_msgs::msg::WrenchStamped::SharedPtr wrench) {
+    const geometry_msgs::msg::WrenchStamped::SharedPtr wrench,
+    bool &wrench_data_flag) {
+
   // Verify that the wrench data is valid
+  if (wrench == nullptr) {
+    RCLCPP_ERROR(node_->get_logger(), "Wrench pointer is null!");
+    return;
+  }
+
   if (controller_utils::isWrenchNan(wrench)) {
     RCLCPP_WARN(node_->get_logger(),
                 "Invalid wrench (NaN) data received. Ignoring input.");
     return;
   }
 
-  cur_wrench_ = *wrench;
+  try {
+    cur_wrench_ = *wrench;
+  } catch (const std::exception &e) {
+		RCLCPP_ERROR(node_->get_logger(), "Failed to update wrench: %s",
+					e.what());
+		return;
+	}
 
-  if (!tare_computed_) {
-    // Collect 1000 samples for taring
-    tare_data_.push_back(cur_wrench_.wrench);
-    if (tare_data_.size() > tare_samples_) {
-      tare_data_.pop_front();
-    }
-    if (tare_data_.size() == tare_samples_) {
-      avg_wrench_ = ft_sensor_utils::computeAverageFtsTare(tare_data_);
-      tare_computed_ = true;
-      start_time_ = std::chrono::steady_clock::now();
-    }
-  }
+  wrench_data_flag = true;
 
-  // Tare the FTS readings
-  if (tare_computed_) {
-    // Apply the tare correction to the force torque sensor readings
-    ft_sensor_utils::applyTareCorrection(avg_wrench_, cur_wrench_.wrench);
-
-    // Track the time for a reset
-    const int reset_time = 5;
-     if (std::chrono::duration_cast<std::chrono::seconds>(
-          std::chrono::steady_clock::now() - start_time_).count() > reset_time){
-            tare_computed_ = false;
-          }
-  }
-
+  // Compensate for gravity on EE
   if (compensate_for_ee_weight_) {
+
     // Get the updated ee_weight in the ft_sensor_frame
     if (!ft_sensor_utils::transformVector(ee_weight_, *tf_buffer_,
                                           ft_sensor_frame_, gravity_frame_))
@@ -268,6 +259,26 @@ void ForceController::updateWrench(
     // Bias the sensor data by the EE weight
     ft_sensor_utils::biasWrench(ee_weight_wrench, cur_wrench_);
   }
+
+  // Collect first 200 samples for taring
+  if (!tare_computed_) {
+    tare_data_.push_back(cur_wrench_.wrench);
+    if (tare_data_.size() > tare_samples_) {
+      tare_data_.pop_front();
+    }
+    if (tare_data_.size() == tare_samples_) {
+      avg_tare_wrench_ = ft_sensor_utils::computeAverageFtsTare(tare_data_);
+      tare_computed_ = true;
+      start_time_ = std::chrono::steady_clock::now();
+    }
+  }
+
+  // Tare the FTS readings
+  if (tare_computed_) {
+    // Apply the tare correction to the force torque sensor readings
+    ft_sensor_utils::applyTareCorrection(avg_tare_wrench_, cur_wrench_.wrench);
+  }
+
 }
 
 bool ForceController::isValidTargetForce(const double& target_force) const {
@@ -308,10 +319,6 @@ bool ForceController::isValidTargetWrench(
                                          max_torque_)) {
     RCLCPP_WARN(node_->get_logger(),
                 "Target wrench value out of range. Ignoring input.");
-    std::cout << "target wrench [0]: " << target_wrench[0] << std::endl;
-    std::cout << "target wrench [2]: " << target_wrench[2] << std::endl;
-    std::cout << "max force: " << max_force_ << std::endl;
-
     return false;
   }
 
@@ -331,19 +338,22 @@ bool ForceController::isValidSensorWrench() {
     std::abs(cur_wrench_.wrench.torque.z) > max_wrench_percent * max_torque_
   ) {
       RCLCPP_ERROR_STREAM_THROTTLE(
-        node_->get_logger(), *node_->get_clock(), ROS_LOG_THROTTLE_PERIOD,
+        node_->get_logger(), *node_->get_clock(), ROS_THROTTLE_PERIOD,
         "Current force or torque close to wrench limits. Stopping motion!");
-
       return false;
   }
 
   // Check if the wrench data is zero
-  double wrench_mag = wrenchMagnitude(cur_wrench_);
+  double wrench_mag = controller_utils::wrenchMagnitude(cur_wrench_);
   const double wrench_threshold = 1e-6;
   if (fabs(wrench_mag) < wrench_threshold) {
     RCLCPP_WARN_STREAM_THROTTLE(node_->get_logger(), *node_->get_clock(),
-                                ROS_LOG_THROTTLE_PERIOD,
+                                ROS_THROTTLE_PERIOD,
                                 "Zero wrench data received. Ignoring input.");
+
+    RCLCPP_WARN(node_->get_logger(), "Wrench magnitude: %f", wrench_mag);
+    controller_utils::logWrenchMsg(cur_wrench_.wrench, node_);
+
     return false;
   }
   return true;
@@ -359,8 +369,8 @@ geometry_msgs::msg::TwistStamped ForceController::computeTwist() {
   
   if(!tare_computed_) {
     RCLCPP_ERROR(node_->get_logger(), "FT tare not computed.");
-    // setTwistToZero();
-    return twist_; // return stale twist value or 0?
+    setTwistToZero();
+    return twist_; // return stale twist value or 0? 
   }
     
   filter_utils::FilterUtils filter;  // Create a filter object
@@ -384,10 +394,14 @@ geometry_msgs::msg::TwistStamped ForceController::computeTwist() {
 
     // Set the twist value
     dim_handler.setTwistValue(twist_desired, twist_.twist);
+
   } else {  // 6D case
     // Apply filters
+  
     filter.filterWrench(cur_wrench_, filter_params_);
     filtered_wrench_ = cur_wrench_;
+
+    controller_utils::logWrenchMsg(filtered_wrench_.wrench, node_);
 
     // Compute the desired twist
     std::vector<double> twist_desired =
@@ -399,10 +413,16 @@ geometry_msgs::msg::TwistStamped ForceController::computeTwist() {
           (fabs(twist_desired.at(i)) > max_twist_)
               ? clamp(twist_desired.at(i), -max_twist_, max_twist_)
               : twist_desired.at(i);
+
+      // Deadband twists to 0 for small values
+      if (abs(twist_desired.at(i)) < 1e-4) {
+        twist_desired.at(i) = 0.0;
+      } 
     }
 
     // Set the twist value
     controller_utils::toTwistMsg(twist_, twist_desired);
+
   }
 
   return twist_;
@@ -430,6 +450,7 @@ double ForceController::computePIDControlSignal(const double measured_force) {
 
   // Compute the error
   double error = target_force_ - measured_force;
+
   //In Moveit Pro implementation, it seems that this is needed to ensure 
   //that the function is triggered for all 6D values
   // RCLCPP_WARN(node_->get_logger(), "target force  %f", target_force_);  
@@ -485,6 +506,7 @@ std::vector<double> ForceController::computeAdmittanceLaw(
   that oppose displacement and velocity, respectively, leading to a stable
   equilibrium and controlled motion.
   */
+
   std::vector<double> twist(measured_wrench.size(), 0.0);
 
   // Initialize previous error signal vector
@@ -495,7 +517,7 @@ std::vector<double> ForceController::computeAdmittanceLaw(
   // Compute the twist
   for (size_t i = 0; i < measured_wrench.size(); i++) {
     double error_signal{0.0};
-    if (use_PID_) { 
+    if (use_pid_) { 
       if(control_wrench_){
 
         // 6D PID case
@@ -524,7 +546,6 @@ std::vector<double> ForceController::computeAdmittanceLaw(
     twist.at(i) = -1 *
                   (error_signal - (stiffness_.at(i) * displacement_.at(i))) /
                   damping_.at(i);
-    
 
     // Cap the twist value to avoid excessively large updates
     if (fabs(twist.at(i)) > max_twist_) {
@@ -543,6 +564,10 @@ std::vector<double> ForceController::computeAdmittanceLaw(
     // Update previous error signal
     prev_error_signal_.at(i) = error_signal;
   }
+
+  // std::cout << "displacement (y): " << displacement_.at(1) << std::endl;
+  std::cout << "computed twist (y): " << twist.at(1) << std::endl;
+
   return twist;
 }
 

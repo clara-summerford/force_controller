@@ -1,7 +1,8 @@
 #include "force_controller/hybrid_controller_action_server.hpp"
 #include "force_controller/utils/utils.hpp"
-#include <tf2_eigen/tf2_eigen.hpp>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <chrono>
+
+
 
 namespace hybrid_multidim_control
 {
@@ -11,14 +12,18 @@ HybridControllerActionServer::HybridControllerActionServer(
     : node_(node) {
 
   using namespace std::placeholders;
+	
+	// hybrid_controller is REAL name of action as seen by ROS
+	action_server_ = rclcpp_action::create_server<HybridController>(
+		node_,
+		"hybrid_controller",
+		std::bind(&HybridControllerActionServer::handle_goal, this, _1, _2),
+		std::bind(&HybridControllerActionServer::handle_cancel, this, _1),
+		std::bind(&HybridControllerActionServer::handle_accepted, this, _1),
+		rcl_action_server_get_default_options()
+	);
 
-  // hybrid_controller is REAL name of action as seen by ROS
-  action_server_ = rclcpp_action::create_server<HybridController>(
-      node_,
-      "hybrid_controller",
-      std::bind(&HybridControllerActionServer::handle_goal, this, _1, _2),
-      std::bind(&HybridControllerActionServer::handle_cancel, this, _1),
-      std::bind(&HybridControllerActionServer::handle_accepted, this, _1));
+		std::cout << "Starting force controller action server..." << std::endl;
 }
 
 rclcpp_action::GoalResponse HybridControllerActionServer::handle_goal(
@@ -27,17 +32,11 @@ rclcpp_action::GoalResponse HybridControllerActionServer::handle_goal(
 {
     // make this more robust -> check if goal is valid before accepting
     
-  RCLCPP_INFO(node_->get_logger(), "Received goal request");
+	RCLCPP_INFO(node_->get_logger(), "Received goal with following wrench setpoint:");
+	controller_utils::logWrenchMsg(goal->wrench_setpoint, node_);
 
-  std::cout << "wrench_setpoint: " << goal->wrench_setpoint.force.z << std::endl;
-  std::cout << "twist_val: " << goal->twist_val << std::endl;
-  std::cout << "distance_delta: " << goal->distance_delta << std::endl;
-  std::cout << "dimension: " << goal->dimension << std::endl;
-
-
-
-  (void)uuid;
-  return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+	(void)uuid;
+	return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 }
 
 rclcpp_action::CancelResponse HybridControllerActionServer::handle_cancel(
@@ -62,8 +61,6 @@ void HybridControllerActionServer::execute(
     const auto goal = goal_handle->get_goal();
     auto feedback = std::make_shared<HybridController::Feedback>();
     auto result = std::make_shared<HybridController::Result>();
-
-    RCLCPP_INFO(node_->get_logger(), "Executing goal yay!!!!");
 
     // Check if there is a cancel request
     if (goal_handle->is_canceling()) {
@@ -94,54 +91,111 @@ void HybridControllerActionServer::execute(
       return;
     }
 
-    // SET UP PUBS/SUBS
+	// Initialize robot model -> needed to check EE pose for stopping conditions
+	initializeRobotModel();
+
+    // Set up publishers + subscribers
     wrench_sub_ = node_->create_subscription<geometry_msgs::msg::WrenchStamped>(
               params_.wrench_sub_topic,
               rclcpp::SensorDataQoS(), /*Match the QoS policy of the publisher*/
               [this](const geometry_msgs::msg::WrenchStamped::SharedPtr msg) {
                 // call updateWrench every time a new message comes through
-                force_controller_->updateWrench(msg); 
+                force_controller_->updateWrench(msg, wrench_data_received_); 
               });
 
     twist_pub_ = node_->create_publisher<geometry_msgs::msg::TwistStamped>(
               params_.pub_topic, rclcpp::QoS(rclcpp::KeepLast(10)));
 
-    if (!initial_pose_set_) {
-      updateInitialPose() == true ? initial_pose_set_ = true
-                                  : initial_pose_set_ = false;
-      start_time_ = std::chrono::steady_clock::now();
-    }
+	// Subscribe to the joint states topic
+	joint_state_sub_ = node_->create_subscription<sensor_msgs::msg::JointState>(
+				"/joint_states", 10,
+				std::bind(&HybridControllerActionServer::jointStateCallback, this,
+							std::placeholders::_1));
 
-    // Create a timer that calls the publish function every 10ms
+	// Wait for the FT tare before entering control loop
+	RCLCPP_INFO(node_->get_logger(), "Taring FT sensor, keep the arm still...");
+	if (!waitForTare(goal_handle, std::chrono::seconds(10))) {
+
+		RCLCPP_ERROR(node_->get_logger(), "FT tare failed or timed out.");
+		result->success = 0;
+
+		if (goal_handle->is_canceling()) {
+				goal_handle->canceled(result);
+			} else {
+				goal_handle->abort(result);
+			}
+
+		return;
+	}
+
+	// Create a timer that calls the publish function every 10ms, enter control loop
     const int time_step{10};
     timer_ = node_->create_wall_timer(
         std::chrono::milliseconds(time_step),
-        std::bind(&HybridControllerActionServer::checkEndEffectorPose, this));
+        std::bind(&HybridControllerActionServer::checkEndEffectorPose, this));	
+		
 
-    // Check if node is still running, keep checking if goal has been met
+    // Check if node is still running in loop @ 100Hz, keep checking if goal has been met
+	rclcpp::Rate loop_rate(100);
     while (rclcpp::ok()) {
 
-        if (std::chrono::duration_cast<std::chrono::seconds>(
-                std::chrono::steady_clock::now() - start_time_)
-                    .count() < params_.publish_time_length && 
-            !distance_reached_) {
+		// Cancel action goal if needed
+		if (goal_handle->is_canceling()) {
+			stopMotion();
+			result->message = "Goal canceled";
+			goal_handle->canceled(result);
+			RCLCPP_INFO(node_->get_logger(), "Goal canceled");
+			return;
+		}
 
-            // Timeout has not elapsed yet, continue tracking and publish feedback
-            goal_handle->publish_feedback(feedback);
+		if (!initial_pose_set_) {
+			updateInitialPose() == true ? initial_pose_set_ = true
+										: initial_pose_set_ = false;
+			start_time_ = std::chrono::steady_clock::now();
+		}
 
-        } else {
-            // If motion goal is complete, stop and send action result
-            stopMotion();
+		// Timeout has not elapsed yet, continue tracking and publish some kind of feedback
+		if (std::chrono::duration_cast<std::chrono::seconds>(
+				std::chrono::steady_clock::now() - start_time_)
+					.count() < params_.publish_time_length && 
+			!distance_reached_) {
 
-            result->message = "Motion goal completed!";
-            result->success = true;
-            goal_handle->succeed(result);
-            RCLCPP_INFO(node_->get_logger(), "Goal succeeded!");
-        }
+			// goal_handle->publish_feedback(feedback);
+
+		} else {
+
+			// If motion goal is complete, stop and send action result
+			stopMotion();
+
+			result->message = "Motion goal completed!";
+			result->success = true;
+			goal_handle->succeed(result);
+			RCLCPP_INFO(node_->get_logger(), "Goal succeeded!");
+			return;
+
+		}
+	loop_rate.sleep();
     }
 }
 
-// Helper function definitions
+// --- Helper function definitions ---
+
+
+bool HybridControllerActionServer::waitForTare(
+	const std::shared_ptr<GoalHandleHybridController> goal_handle,
+	std::chrono::seconds timeout) 
+{
+	const auto deadline = std::chrono::steady_clock::now() + timeout;
+
+	while (rclcpp::ok() && std::chrono::steady_clock::now() < deadline) {
+		if (goal_handle->is_canceling()) return false;
+		if (force_controller_->tareComputed()) return true;
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+
+return false;
+}
+
 HybridGoalParams HybridControllerActionServer::extractGoalParams(
   const std::shared_ptr<const HybridController::Goal>& goal) {
 
@@ -149,6 +203,7 @@ HybridGoalParams HybridControllerActionServer::extractGoalParams(
   p.twist_val = goal->twist_val;
   p.distance_delta = goal->distance_delta;
   p.dimension  = goal->dimension;
+  p.wrench_setpoint = goal->wrench_setpoint;
   return p;
 }
 
@@ -162,23 +217,28 @@ HybridForceExecParams HybridControllerActionServer::buildExecParams(
 } 
 
 bool HybridControllerActionServer::getParams(
-  std::shared_ptr<const HybridController::Goal> goal) {
+	std::shared_ptr<const HybridController::Goal> goal) {
 
-  // YAML config params
-  force_controller_params_ = twist_force_controller::getControllerParams();
-  hybrid_motion_params_ = getHybridMotionParams();
-    
-  // BT action client params
-  hybrid_goal_params_ = extractGoalParams(goal);
+	// YAML config params
+	force_controller_params_ = twist_force_controller::getControllerParams();
+	hybrid_motion_params_ = getHybridMotionParams();
 
-  // combine ALL params into one struct
-  params_ = buildExecParams(
-    force_controller_params_,
-    hybrid_motion_params_,
-    hybrid_goal_params_
-  );
+	// BT action client params
+	hybrid_goal_params_ = extractGoalParams(goal);
 
-  return true;
+	// Pass goal wrench params into force controller
+	geometry_msgs::msg::WrenchStamped stamped_wrench_set;
+	stamped_wrench_set.wrench = goal->wrench_setpoint;
+	force_controller_params_.wrench_setpoint = controller_utils::toWrenchVector(stamped_wrench_set);
+
+	// combine ALL params into one struct
+	params_ = buildExecParams(
+	force_controller_params_,
+	hybrid_motion_params_,
+	hybrid_goal_params_
+	);
+
+	return true;
 }
 
 void HybridControllerActionServer::jointStateCallback(
@@ -190,90 +250,128 @@ void HybridControllerActionServer::jointStateCallback(
   current_joint_state_ = msg;
 }
 
-bool HybridControllerActionServer::initializeRobotModelLoader() {
-  try {
-    robot_model_loader_ =
-        std::make_shared<robot_model_loader::RobotModelLoader>(
-            node_, "robot_description");
+bool HybridControllerActionServer::initializeRobotModel() {
 
-  } catch (const std::exception &e) {
-    RCLCPP_ERROR(node_->get_logger(), "Failed to initialize RobotModelLoader: %s",
-                 e.what());
-    return false;
-  }
-  return true;
+	// Initialize robot model loader
+	try {
+		robot_model_loader_ =
+			std::make_shared<robot_model_loader::RobotModelLoader>(
+				node_, "robot_description");
+
+	} catch (const std::exception &e) {
+		RCLCPP_ERROR(node_->get_logger(), "Failed to initialize RobotModelLoader: %s",
+					e.what());
+		return false;
+	}
+
+	// Initialize robot kinematics (model)
+	moveit::core::RobotModelPtr kinematic_model = robot_model_loader_->getModel();
+	if (!kinematic_model) {
+		RCLCPP_ERROR(node_->get_logger(), "Failed to get kinematic model.");
+		return false;
+	}
+
+	// Initialize robot state
+	robot_state_ = std::make_shared<moveit::core::RobotState>(kinematic_model);
+	robot_state_->setToDefaultValues();
+	joint_model_group_ = kinematic_model->getJointModelGroup(
+		params_.group_name);
+
+	if (!robot_state_) {
+		RCLCPP_ERROR(node_->get_logger(), "Failed to get robot state.");
+		return false;
+	}
+
+	return true;
 }
 
 
 void HybridControllerActionServer::checkEndEffectorPose() {
-  if (!initial_pose_set_) { // Start pose tracking when the initial pose is set
-    return;
-  }
-  // Update the robot state with the latest joint states
-  robot_state_->setVariablePositions(current_joint_state_->name,
-                                     current_joint_state_->position);
-  robot_state_->update();
+	// Start pose tracking when the initial pose is set and wrench data has been received 
+	if (!initial_pose_set_ || !wrench_data_received_) { 
+		return;
+	}
 
-  const Eigen::Isometry3d &end_effector_state =
-      robot_state_->getGlobalLinkTransform(
-          params_.twist_pub_frame);
+	// Update the robot state with the latest joint states
+	robot_state_->setVariablePositions(current_joint_state_->name,
+										current_joint_state_->position);
+	robot_state_->update();
 
-  // Convert Eigen::Isometry3d to geometry_msgs::msg::Pose
-  geometry_msgs::msg::Pose current_pose;
-  tf2::convert(end_effector_state, current_pose);
 
-  // Calculate time elapsed for time-dependent curved paths
-  auto now = node_->now();
-  t_ = (now - path_start_time_).seconds(); 
+	const Eigen::Isometry3d &end_effector_state =
+		robot_state_->getGlobalLinkTransform(
+			params_.twist_pub_frame);
 
-  double distance_moved;
-  if (isLinear()) {
-    distance_moved = hybrid_multidim_utils::calculateDistanceMoved(current_pose, initial_pose_);
-            
-    if (distance_moved < fabs(params_.distance_delta)) {
-      publishTwist();
-    } else {
-      distance_reached_ = true;
-    }
-  } else if (isAngular()) {
-    distance_moved =
-        toDegrees(hybrid_multidim_utils::calculateAngleTurned(current_pose, initial_pose_));
-    if (distance_moved < fabs(params_.distance_delta)) {
-      publishTwist();
-    } else {
-      distance_reached_ = true;
-    }
-  } else if (isShape()) {
-    distance_moved = hybrid_multidim_utils::calculateDistanceMoved(current_pose, initial_pose_);
-    publishTwist();
-  } else {
+	// Convert Eigen::Isometry3d to geometry_msgs::msg::Pose
+	geometry_msgs::msg::Pose current_pose;
+	tf2::convert(end_effector_state, current_pose);
 
-    RCLCPP_WARN(node_->get_logger(), "Publishing twist without checking distance moved.");
-    publishTwist();
+	// Calculate time elapsed for time-dependent curved paths
+	auto now = node_->now();
+	t_ = (now - path_start_time_).seconds(); 
 
-  }
+	double distance_moved;
+	if (isLinear()) {
+		distance_moved = hybrid_multidim_utils::calculateDistanceMoved(current_pose, initial_pose_);
+				
+		if (distance_moved < fabs(params_.distance_delta)) {
+		publishTwist();
+		} else {
+		distance_reached_ = true;
+		}
+	} else if (isAngular()) {
+		distance_moved =
+			toDegrees(hybrid_multidim_utils::calculateAngleTurned(current_pose, initial_pose_));
+		if (distance_moved < fabs(params_.distance_delta)) {
+		publishTwist();
+		} else {
+		distance_reached_ = true;
+		}
+	} else if (isShape()) {
+		distance_moved = hybrid_multidim_utils::calculateDistanceMoved(current_pose, initial_pose_);
+		publishTwist();
+	} else {
+		RCLCPP_WARN(node_->get_logger(), "Publishing twist without checking distance moved.");
+		publishTwist();
+	}
+
 }
 
 bool HybridControllerActionServer::updateInitialPose() {
-  if (!current_joint_state_) {
-    RCLCPP_ERROR(node_->get_logger(),
-                 "No joint state data available. Cannot update initial pose.");
-    return false;
-  }
+	if (!current_joint_state_) {
+		RCLCPP_WARN(node_->get_logger(),
+					"No joint state data available. Cannot update initial pose.");
+		return false;
+	} else if (current_joint_state_) {
+		RCLCPP_INFO(node_->get_logger(), "Found initial joint state data.");
+	}
 
-  // Update the robot state with the latest joint states
-  robot_state_->setVariablePositions(current_joint_state_->name,
-                                     current_joint_state_->position);
-  robot_state_->update();
+	if (!robot_state_) {
+		RCLCPP_ERROR(node_->get_logger(), "Initial robot_state_ is null!");
+		return false;
+	}
 
-  const Eigen::Isometry3d &end_effector_state =
-      robot_state_->getGlobalLinkTransform(
-          params_.twist_pub_frame);
+	// Update the robot state with the latest joint states
+	try{ 
+		robot_state_->setVariablePositions(current_joint_state_->name,
+											current_joint_state_->position);
+		robot_state_->update();
+	} catch (const std::exception &e) {
+		RCLCPP_ERROR(node_->get_logger(), "Failed to update robot state: %s",
+					e.what());
+		return false;
+	}
 
-  // Convert and store as initial pose
-  tf2::convert(end_effector_state, initial_pose_);
+	const Eigen::Isometry3d &end_effector_state =
+		robot_state_->getGlobalLinkTransform(
+			params_.twist_pub_frame);
 
-  return true;
+	// Convert and store as initial pose
+	tf2::convert(end_effector_state, initial_pose_);
+
+	path_start_time_ = node_->now();
+
+	return true;
 }
 
 bool HybridControllerActionServer::isLinear() {
@@ -339,50 +437,58 @@ void HybridControllerActionServer::setTwistValue(
 
 void HybridControllerActionServer::publishTwist() {
 
-  // Stop if very close to max force/torque or zero wrench
-  if (!force_controller_->isValidSensorWrench()) {
-    RCLCPP_WARN(node_->get_logger(), "Invalid sensor wrench, close to limits or 0");
-    stopMotion();
-    return;
-  }
+	// Stop if very close to max force/torque or zero wrench
+	if (!force_controller_->isValidSensorWrench()) {
+		RCLCPP_WARN(node_->get_logger(), "Invalid sensor wrench, close to limits or 0");
+		stopMotion();
+		return;
+	}
 
-  geometry_msgs::msg::TwistStamped twist;
-  twist.header.stamp = node_->now();
-  twist.header.frame_id = params_.twist_pub_frame;
+	geometry_msgs::msg::TwistStamped twist;
+	twist.header.stamp = node_->now();
+	twist.header.frame_id = params_.twist_pub_frame;
 
-  // Clamp the twist value to the max_twist boundaries
-  params_.twist_val =
-      std::clamp(params_.twist_val,
-                 -params_.max_twist,
-                 params_.max_twist);
+	// Clamp the twist value to the max_twist boundaries
+	params_.twist_val =
+		std::clamp(params_.twist_val,
+					-params_.max_twist,
+					params_.max_twist);
 
-  // Set the twist value based on the dimension
-  setTwistValue(twist);
+	// Set the twist value based on the dimension
+	setTwistValue(twist);
 
-  /*If get_controller_twist is set to true, the force controller will just
-  compute the twist for every time step, which is grabbed here. Else this is
-  published by the force controller node. This node then adds the force
-  controller twist to the twist value calculated by the  motion primitive.
-  */
-  if (params_.get_controller_twist) {
-    // Add the twist value to the force controller's twist
-    geometry_msgs::msg::TwistStamped force_controller_twist =
-        force_controller_->computeTwist();
+	/*If get_controller_twist is set to true, the force controller will just
+	compute the twist for every time step, which is grabbed here. Else this is
+	published by the force controller node. This node then adds the force
+	controller twist to the twist value calculated by the  motion primitive.
+	*/
 
-    twist.twist = hybrid_multidim_utils::addTwists(
-      twist.twist, force_controller_twist.twist); // Add the twist values
-  }
+	// Add the twist value to the force controller's twist
+	geometry_msgs::msg::TwistStamped force_controller_twist =
+		force_controller_->computeTwist();
 
-  // Rotate the linear twist 90 deg about the Z axis for Servo in MoveItPro v5.0
-  const int rotation_angle{-90};
-  hybrid_multidim_utils::rotateLinearTwist(twist.twist, 'z', rotation_angle);
+	// controller_utils::logTwistMsg(force_controller_twist, node_);
 
-  // Publish the twist message
-  twist_pub_->publish(twist);
-  std::cout << "published twist msg" << std::endl;
+	twist.twist = hybrid_multidim_utils::addTwists(
+	twist.twist, force_controller_twist.twist); // Add the twist values
 
 
-  // PUBLISH TO MOVEIT SERVO !!!!!
+	// Rotate the linear twist 90 deg about the Z axis for Servo in MoveItPro v5.0
+	// const int rotation_angle{-90};
+	// hybrid_multidim_utils::rotateLinearTwist(twist.twist, 'z', rotation_angle);
+
+
+	// Publish the twist message to MoveIt servo topic
+	// Creates empty twist message to send everything to 0
+	// geometry_msgs::msg::TwistStamped empty_twist; 
+	// empty_twist.header.stamp = node_->now();
+	// empty_twist.header.frame_id = params_.twist_pub_frame;
+
+	controller_utils::logTwistMsg(twist, node_);
+
+	twist_pub_->publish(twist);
+
+
 }
 
 void HybridControllerActionServer::stopMotion() {
@@ -397,7 +503,7 @@ void HybridControllerActionServer::stopMotion() {
   twist.header.stamp = node_->now();
   twist.header.frame_id = params_.twist_pub_frame;
 
-  // Publish the twist message -- CHANGE TO MOVEIT SERVO PUB
+  // Publish the twist message 
   twist_pub_->publish(twist);
 
   // Reset subs/pubs and pointers

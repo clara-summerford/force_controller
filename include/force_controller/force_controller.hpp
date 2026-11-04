@@ -126,9 +126,11 @@ class ForceController {
   /**
    * @brief Callback function for the wrench data subscriber
    * @param wrench The wrench data message
+   * @param wrench_data_flag
    * @post The wrench data is updated
    */
-  void updateWrench(const geometry_msgs::msg::WrenchStamped::SharedPtr wrench);
+  void updateWrench(const geometry_msgs::msg::WrenchStamped::SharedPtr wrench,
+                    bool &wrench_data_flag);
 
   /** @brief Triggers the private targetForceCB function */
   void triggerStopMotion() { setTwistToZero(); }
@@ -157,6 +159,8 @@ class ForceController {
    */
   bool isValidSensorWrench();
 
+  bool tareComputed() { if (tare_computed_) return true; else return false; }; 
+
   ~ForceController();
 
  private:
@@ -177,19 +181,6 @@ class ForceController {
    * @return True if target wrench is valid, false otherwise
    */
   bool isValidTargetWrench(const std::vector<double>& target_wrench) const;
-
-  /**
-   * @brief Computes the magnitude of the wrench
-   * @param wrench The wrench data message
-   * @return The magnitude of the wrench
-   */
-  inline double wrenchMagnitude(
-      const geometry_msgs::msg::WrenchStamped& wrench) {
-    return sqrt(pow(wrench.wrench.force.x, 2) + pow(wrench.wrench.force.y, 2) +
-                pow(wrench.wrench.force.z, 2) + pow(wrench.wrench.torque.x, 2) +
-                pow(wrench.wrench.torque.y, 2) +
-                pow(wrench.wrench.torque.z, 2));
-  }
 
   /**
    * @brief Computes the control signal based on the measured and target force.
@@ -235,12 +226,12 @@ class ForceController {
   }
 
   geometry_msgs::msg::WrenchStamped cur_wrench_, tare_values_, filtered_wrench_;
-  geometry_msgs::msg::Wrench avg_wrench_;
+  geometry_msgs::msg::Wrench avg_tare_wrench_;
   geometry_msgs::msg::TwistStamped twist_;
 
   rclcpp::TimerBase::SharedPtr timer_;
 
-  bool control_wrench_, compensate_for_ee_weight_, use_PID_;
+  bool control_wrench_, compensate_for_ee_weight_, use_pid_;
 
   double ff_gain_, max_twist_, target_force_, max_force_, max_torque_,
       previous_error_, integral_, kp_, kd_, ki_, prev_time_, delta_time_,
@@ -248,8 +239,7 @@ class ForceController {
 
   filter_utils::FilterWrenchParams filter_params_;
 
-  std::vector<double> target_wrench_, damping_, stiffness_, ee_com_,
-      displacement_;
+  std::vector<double> target_wrench_, damping_, stiffness_, ee_com_, displacement_;
 
   controller_utils::Dimension dimension_;
 
@@ -263,7 +253,7 @@ class ForceController {
   rclcpp::Node::SharedPtr node_;
 
   bool tare_computed_{false};
-  size_t tare_samples_{1000};
+  size_t tare_samples_{100};
   std::deque<geometry_msgs::msg::Wrench> tare_data_;
   std::vector<double> prev_error_signal_;
   std::chrono::time_point<std::chrono::steady_clock> start_time_;

@@ -72,7 +72,7 @@ std::vector<double>
 
 bool /*Behavior input port param: */ get_controller_twist,
     /*Controller config file params: */ has_ft_sensor, control_wrench,
-    compensate_for_ee_weight, add_restoring_force_term, use_PID;
+    compensate_for_ee_weight, add_restoring_force_term, use_pid;
 
 filter_utils::FilterWrenchParams filter_params;
 };

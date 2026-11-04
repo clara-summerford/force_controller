@@ -13,7 +13,6 @@ ForceControllerParams getControllerParams() {
    Review the force_controller_params.yaml file for more details on each
    parameter
   */
-  std::cout << "getControllerParams called" << std::endl;
 
   // Grab the path to the config file
   std::string configFilePath;
@@ -41,16 +40,28 @@ ForceControllerParams getControllerParams() {
   param.wrench_sub_topic = force_controller_params["wrench_sub_topic"].as<std::string>();
   param.pub_topic = force_controller_params["pub_topic"].as<std::string>();
 
+  param.ft_sensor_frame = force_controller_params["ft_sensor_frame"].as<std::string>();
+  param.gravity_frame = force_controller_params["gravity_frame"].as<std::string>();
+  param.twist_pub_frame = force_controller_params["twist_pub_frame"].as<std::string>();
+
   param.control_wrench = force_controller_params["control_wrench"].as<bool>();
   param.has_ft_sensor = force_controller_params["has_ft_sensor"].as<bool>();
   param.ff_gain = force_controller_params["ff_gain"].as<double>();
   param.anti_windup_error_threshold = force_controller_params["anti_windup_error_threshold"].as<double>();
-  
+  param.add_restoring_force_term = force_controller_params["add_restoring_force_term"].as<bool>();
+  param.use_pid = force_controller_params["use_pid"].as<bool>();
+
+  param.kp = force_controller_params["kp"].as<double>();
+  param.ki = force_controller_params["ki"].as<double>();  
+  param.kd = force_controller_params["kd"].as<double>();
+
   param.compensate_for_ee_weight = force_controller_params["compensate_for_ee_weight"].as<bool>();
+  param.ee_weight = force_controller_params["ee_weight"].as<double>();
+
   
   param.max_force = force_controller_params["max_force"].as<double>();
   param.max_torque = force_controller_params["max_torque"].as<double>();
-    param.max_twist = force_controller_params["max_twist"].as<double>();
+  param.max_twist = force_controller_params["max_twist"].as<double>();
 
   param.filter_params.deadband_threshold =
       force_controller_params["deadband_threshold"].as<double>();
@@ -70,14 +81,15 @@ ForceControllerParams getControllerParams() {
   param.filter_params.measurement_noise =
       force_controller_params["measurement_noise"].as<double>();
 
+
   // Handle the vector cases
-  if (force_controller_params["wrench_setpoint"] &&
-      force_controller_params["wrench_setpoint"].IsSequence()) {
-    param.wrench_setpoint =
-        force_controller_params["wrench_setpoint"].as<std::vector<double>>();
-  } else {
-    param.wrench_setpoint = {0, 0, 0, 0, 0, 0};
-  }
+  // if (force_controller_params["wrench_setpoint"] &&
+  //     force_controller_params["wrench_setpoint"].IsSequence()) {
+  //   param.wrench_setpoint =
+  //       force_controller_params["wrench_setpoint"].as<std::vector<double>>();
+  // } else {
+  //   param.wrench_setpoint = {0, 0, 0, 0, 0, 0};
+  // }
   if (force_controller_params["damping_6D"] &&
       force_controller_params["damping_6D"].IsSequence()) {
     param.damping_6D =
@@ -114,7 +126,7 @@ ForceControllerParams getDefaultControllerParams() {
   param.get_controller_twist = true;
   param.control_wrench = false;
   param.compensate_for_ee_weight = false;
-  param.use_PID = true;
+  param.use_pid = true;
 
   param.force_setpoint = 0.0;
   param.max_force = 20.0;
@@ -133,10 +145,14 @@ ForceControllerParams getDefaultControllerParams() {
   param.wrench_sub_topic = "/force_torque_sensor_broadcaster/wrench";
   param.pub_topic = "/servo_server/delta_twist_cmds";
 
+  param.kp = 0.1;
+  param.ki = 0;
+  param.kd = 0;
+
   param.damping_1D = {1000.0};
   param.stiffness_1D = {2000.0};
   param.ee_com = {0.0, 0.0, 0.06};
-  param.wrench_setpoint = {0, 0, 0, 0, 0, 0};
+  // param.wrench_setpoint = {0, 0, 0, 0, 0, 0};
   param.damping_6D = {1000.0, 1000.0, 1000.0, 100.0, 100.0, 100.0};
   param.stiffness_6D = {2000.0, 2000.0, 2000.0, 100.0, 100.0, 100.0};
 

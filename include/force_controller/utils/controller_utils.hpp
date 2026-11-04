@@ -109,8 +109,37 @@ void toTwistMsg(geometry_msgs::msg::TwistStamped& twist,
  * @post The wrench vector is logged using the specified logger name and message
  */
 void logWrenchVector(const std::vector<double>& wrench,
-                     const std::string& logger_name = "default_logger",
+                     rclcpp::Node::SharedPtr node,
                      const std::string& msg = "Wrench Vector");
+
+
+/**
+ * @brief Logs all forces and torques from a wrench message.
+ * 
+ * @param wrench 
+ * @param node 
+ */
+void logWrenchMsg(const geometry_msgs::msg::Wrench& wrench, 
+              rclcpp::Node::SharedPtr node);
+
+
+/**
+ * @brief Logs twist values from a twist stampted message.
+ * 
+ * @param twist 
+ * @param node 
+ */
+void logTwistMsg(const geometry_msgs::msg::TwistStamped& twist, 
+              rclcpp::Node::SharedPtr node);
+
+
+/**
+ * @brief Computes the magnitude of the wrench
+ * @param wrench The wrench data message
+ * @return The magnitude of the wrench
+ */
+double wrenchMagnitude(const geometry_msgs::msg::WrenchStamped& wrench);   
+
 }  // namespace controller_utils
 
 namespace ft_sensor_utils {
@@ -166,7 +195,7 @@ geometry_msgs::msg::Wrench computeAverageFtsTare(
  * @param ft_values The force torque sensor readings
  * @post ft_values is updated with the tare correction
  */
-void applyTareCorrection(const geometry_msgs::msg::Wrench& avg_wrench,
+void applyTareCorrection(const geometry_msgs::msg::Wrench& avg_tare_wrench,
                          geometry_msgs::msg::Wrench& ft_values);
 
 }  // namespace ft_sensor_utils

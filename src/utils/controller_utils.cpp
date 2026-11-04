@@ -120,11 +120,42 @@ void toWrenchMsg(geometry_msgs::msg::WrenchStamped& wrench,
 }
 
 void logWrenchVector(const std::vector<double>& wrench,
-                     const std::string& logger_name, const std::string& msg) {
-  RCLCPP_INFO(rclcpp::get_logger(logger_name), "%s: [%f, %f, %f, %f, %f, %f]",
-              msg.c_str(), wrench.at(0), wrench.at(1), wrench.at(2),
+                     rclcpp::Node::SharedPtr node, const std::string& msg) {
+  RCLCPP_INFO(node->get_logger(), "%s: [%f, %f, %f, %f, %f, %f]",
+              msg.c_str(), 
+              wrench.at(0), wrench.at(1), wrench.at(2),
               wrench.at(3), wrench.at(4), wrench.at(5));
 }
+ 
+void logWrenchMsg(const geometry_msgs::msg::Wrench& wrench, 
+              rclcpp::Node::SharedPtr node) {
+  RCLCPP_INFO(node->get_logger(), "Wrench: [%f, %f, %f, %f, %f, %f]",
+              wrench.force.x,
+              wrench.force.y,
+              wrench.force.z,
+              wrench.torque.x,
+              wrench.torque.y,
+              wrench.torque.z);
+}
+
+void logTwistMsg(const geometry_msgs::msg::TwistStamped& twist, 
+              rclcpp::Node::SharedPtr node) {
+  RCLCPP_INFO(node->get_logger(), "Twist: [%f, %f, %f, %f, %f, %f]",
+              twist.twist.linear.x,
+              twist.twist.linear.y,
+              twist.twist.linear.z,
+              twist.twist.angular.x,
+              twist.twist.angular.y,
+              twist.twist.angular.z);
+}
+
+double wrenchMagnitude(const geometry_msgs::msg::WrenchStamped& wrench) {
+    return sqrt(pow(wrench.wrench.force.x, 2) + pow(wrench.wrench.force.y, 2) +
+                pow(wrench.wrench.force.z, 2) + pow(wrench.wrench.torque.x, 2) +
+                pow(wrench.wrench.torque.y, 2) +
+                pow(wrench.wrench.torque.z, 2));
+}
+
 }  // namespace controller_utils
 
 namespace ft_sensor_utils {
@@ -134,13 +165,13 @@ bool transformVector(geometry_msgs::msg::Vector3Stamped& vector,
                      const std::string& to_frame,
                      const std::string& from_frame) {
   //  Get the transformation object
-  geometry_msgs::msg::TransformStamped transform_stamped; /*gravity_to_ft_tf*/
+  geometry_msgs::msg::TransformStamped transform_stamped; /*  */
 
   try {
     transform_stamped =
         tf_buffer.lookupTransform(to_frame, from_frame, tf2::TimePointZero, tf2::durationFromSec(3.0));
-    RCLCPP_INFO(rclcpp::get_logger("ft_sensor_utils"), "Transform found!");
   } catch (tf2::TransformException& ex) {
+    RCLCPP_ERROR(rclcpp::get_logger("ft_sensor_utils"), "FT sensor transform NOT found!");
     RCLCPP_ERROR(rclcpp::get_logger("ft_sensor_utils"), "%s", ex.what());
     return false;
   }
@@ -202,14 +233,14 @@ geometry_msgs::msg::Wrench computeAverageFtsTare(
   return tare_values;
 }
 
-void applyTareCorrection(const geometry_msgs::msg::Wrench& avg_wrench,
+void applyTareCorrection(const geometry_msgs::msg::Wrench& avg_tare_wrench,
                          geometry_msgs::msg::Wrench& ft_values) {
   // Apply the tare correction to the force torque sensor readings
-  ft_values.force.x -= avg_wrench.force.x;
-  ft_values.force.y -= avg_wrench.force.y;
-  ft_values.force.z -= avg_wrench.force.z;
-  ft_values.torque.x -= avg_wrench.torque.x;
-  ft_values.torque.y -= avg_wrench.torque.y;
-  ft_values.torque.z -= avg_wrench.torque.z;
+  ft_values.force.x -= avg_tare_wrench.force.x;
+  ft_values.force.y -= avg_tare_wrench.force.y;
+  ft_values.force.z -= avg_tare_wrench.force.z;
+  ft_values.torque.x -= avg_tare_wrench.torque.x;
+  ft_values.torque.y -= avg_tare_wrench.torque.y;
+  ft_values.torque.z -= avg_tare_wrench.torque.z;
 }
 }  // namespace ft_sensor_utils
