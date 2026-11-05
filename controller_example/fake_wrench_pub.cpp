@@ -55,22 +55,23 @@ class WrenchPublisherNode : public rclcpp::Node {
   void parseParameters() {
     // Default values
     force_z_ = 2.0;
-    max_threshold_ = 15.0;
-    min_threshold_ = 5.0;
+    max_threshold_ = 10.0;
+    min_threshold_ = -10.0;
 
     // Load parameters from the parameter server
-    force_z_ = this->declare_parameter<double>("force_z", force_z_);
-    max_threshold_ =
-        this->declare_parameter<double>("max_threshold", max_threshold_);
-    min_threshold_ =
-        this->declare_parameter<double>("min_threshold", min_threshold_);
+    // force_z_ = this->declare_parameter<double>("force_z", force_z_);
+    // max_threshold_ =
+    //     this->declare_parameter<double>("max_threshold", max_threshold_);
+    // min_threshold_ =
+    //     this->declare_parameter<double>("min_threshold", min_threshold_);
   }
 
   void publishWrench() {
     // Generate some fake wrench data
     geometry_msgs::msg::WrenchStamped wrench_msg;
+    wrench_msg.header.frame_id = "end_effector_link";
     wrench_msg.header.stamp = this->now();
-    wrench_msg.wrench.force.z = force_z_;
+    wrench_msg.wrench.force.x = force_z_;
 
     wrench_pub_->publish(wrench_msg);
 

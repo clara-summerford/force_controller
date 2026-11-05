@@ -120,7 +120,8 @@ void logWrenchVector(const std::vector<double>& wrench,
  * @param node 
  */
 void logWrenchMsg(const geometry_msgs::msg::Wrench& wrench, 
-              rclcpp::Node::SharedPtr node);
+              rclcpp::Node::SharedPtr node,
+                const std::string& msg = "Wrench");
 
 
 /**
@@ -130,7 +131,8 @@ void logWrenchMsg(const geometry_msgs::msg::Wrench& wrench,
  * @param node 
  */
 void logTwistMsg(const geometry_msgs::msg::TwistStamped& twist, 
-              rclcpp::Node::SharedPtr node);
+                rclcpp::Node::SharedPtr node,
+                const std::string& msg = "Twist");
 
 
 /**

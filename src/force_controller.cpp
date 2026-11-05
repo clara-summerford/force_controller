@@ -10,11 +10,7 @@ constexpr auto ROS_THROTTLE_PERIOD =
 
 // Constructor
 ForceController::ForceController(const rclcpp::Node::SharedPtr& node)
-    : previous_error_(0.0),
-      integral_(0.0),
-      prev_time_(0.0),
-      delta_time_(0.0),
-      node_(node) {}
+    : node_(node) {}
 
 // Destructor
 ForceController::~ForceController() {
@@ -214,7 +210,14 @@ bool ForceController::initialize(const ForceControllerParams& params) {
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(node_->get_clock());
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
   }
-  return true;
+
+  // Initialize PID control vars
+	if (control_wrench_){
+		integral_.resize(NUM_DIMS, 0.0);
+		previous_error_.resize(NUM_DIMS, 0.0);
+		prev_error_signal_.resize(NUM_DIMS, 0.0);
+  	}
+  	return true;
 }
 
 void ForceController::updateWrench(
@@ -360,70 +363,73 @@ bool ForceController::isValidSensorWrench() {
 }
 
 geometry_msgs::msg::TwistStamped ForceController::computeTwist() {
-  // Stop if very close to max force/torque or zero wrench
-  if (!isValidSensorWrench()) {
-    RCLCPP_ERROR(node_->get_logger(), "Invalid sensor wrench from force controller!");
-    setTwistToZero();
-    return twist_;
-  }
-  
-  if(!tare_computed_) {
-    RCLCPP_ERROR(node_->get_logger(), "FT tare not computed.");
-    setTwistToZero();
-    return twist_; // return stale twist value or 0? 
-  }
-    
-  filter_utils::FilterUtils filter;  // Create a filter object
+	// Stop if very close to max force/torque or zero wrench
+	// if (!isValidSensorWrench()) {
+	// 	RCLCPP_ERROR(node_->get_logger(), "Invalid sensor wrench from force controller!");
+	// 	setTwistToZero();
+	// 	return twist_;
+	// }
+	
+	if(!tare_computed_) {
+		RCLCPP_ERROR(node_->get_logger(), "FT tare not computed.");
+		setTwistToZero();
+		return twist_; // return stale twist value or 0? 
+	}
+		
+	filter_utils::FilterUtils filter;  // Create a filter object
 
-  if (!control_wrench_) {  // Simple, 1D case
-    //  Construct the dimension object in each iteration to ensure that the
-    //  dimension is updated
-    DimensionHandler dim_handler(dimension_);
-    double cur_wrench = dim_handler.getWrenchValue(cur_wrench_);
+	if (!control_wrench_) {  // Simple, 1D case
+		//  Construct the dimension object in each iteration to ensure that the
+		//  dimension is updated
+		DimensionHandler dim_handler(dimension_);
+		double cur_wrench = dim_handler.getWrenchValue(cur_wrench_);
 
-    // Apply filters
-    filter.filterWrench(cur_wrench, filter_params_);
+		// Apply filters
+		filter.filterWrench(cur_wrench, filter_params_);
 
-    // Compute the desired twist
-    double twist_desired = computeAdmittanceLaw({cur_wrench}).at(0);
+		// Compute the desired twist
+		double twist_desired = computeAdmittanceLaw({cur_wrench}).at(0);
 
-    // Clamp the desired twist to the twist max
-    twist_desired = fabs(twist_desired) > max_twist_
-                        ? clamp(twist_desired, -max_twist_, max_twist_)
-                        : twist_desired;
+		// Clamp the desired twist to the twist max
+		twist_desired = fabs(twist_desired) > max_twist_
+							? clamp(twist_desired, -max_twist_, max_twist_)
+							: twist_desired;
 
-    // Set the twist value
-    dim_handler.setTwistValue(twist_desired, twist_.twist);
+		// Set the twist value
+		dim_handler.setTwistValue(twist_desired, twist_.twist);
 
-  } else {  // 6D case
-    // Apply filters
-  
-    filter.filterWrench(cur_wrench_, filter_params_);
-    filtered_wrench_ = cur_wrench_;
+	} else {  // 6D case
+		// Apply filters
+	
+		filter.filterWrench(cur_wrench_, filter_params_);
+		filtered_wrench_ = cur_wrench_;
 
-    controller_utils::logWrenchMsg(filtered_wrench_.wrench, node_);
+		// Compute the desired twist
+		std::vector<double> twist_desired =
+			computeAdmittanceLaw(controller_utils::toWrenchVector(cur_wrench_));
 
-    // Compute the desired twist
-    std::vector<double> twist_desired =
-        computeAdmittanceLaw(controller_utils::toWrenchVector(cur_wrench_));
+		// Clamp the desired twist to the twist max
+		for (size_t i = 0; i < NUM_DIMS; i++) {
+		twist_desired.at(i) =
+			(fabs(twist_desired.at(i)) > max_twist_)
+				? clamp(twist_desired.at(i), -max_twist_, max_twist_)
+				: twist_desired.at(i);
 
-    // Clamp the desired twist to the twist max
-    for (size_t i = 0; i < NUM_DIMS; i++) {
-      twist_desired.at(i) =
-          (fabs(twist_desired.at(i)) > max_twist_)
-              ? clamp(twist_desired.at(i), -max_twist_, max_twist_)
-              : twist_desired.at(i);
+		// Deadband twists to 0 for small values
+		if (abs(twist_desired.at(i)) < 1e-4) {
+			twist_desired.at(i) = 0.0;
+		} 
+		}
 
-      // Deadband twists to 0 for small values
-      if (abs(twist_desired.at(i)) < 1e-4) {
-        twist_desired.at(i) = 0.0;
-      } 
-    }
+		// Set the twist value
+		controller_utils::toTwistMsg(twist_, twist_desired);
+	}
 
-    // Set the twist value
-    controller_utils::toTwistMsg(twist_, twist_desired);
+	controller_utils::logWrenchMsg(cur_wrench_.wrench, node_);
+  controller_utils::logTwistMsg(twist_, node_);
+  // std::cout << "Wrench, Twist: " << cur_wrench_.wrench.force.z << ", " << twist_.twist.linear.z << std::endl;
 
-  }
+
 
   return twist_;
 }
@@ -433,142 +439,140 @@ void ForceController::setTwistToZero() {
   twist_.header.stamp = node_->get_clock()->now();
 }
 
-double ForceController::computePIDControlSignal(const double measured_force) {
-  /*PID control: The proportional term adjusts the control action based on the
-     current error, the integral term integrates past errors to eliminate
-     steady-state errors, and the derivative term anticipates future errors
-     based on the rate of change of the error.*/
+double ForceController::computePIDControlSignal(const double measured_force, double idx) {
+	/*PID control: The proportional term adjusts the control action based on the
+		current error, the integral term integrates past errors to eliminate
+		steady-state errors, and the derivative term anticipates future errors
+		based on the rate of change of the error.*/
 
-  //  Get the time delta
-  double cur_time = node_->get_clock()->now().seconds();
-  delta_time_ = cur_time - prev_time_;
+	// Compute the error
+	double error = target_force_ - measured_force;
 
-  //  Handle the first iter when prev_time_ is zero
-  if (delta_time_ > TIME_STEP) {
-    delta_time_ = TIME_STEP;
-  }
+	//In Moveit Pro implementation, it seems that this is needed to ensure 
+	//that the function is triggered for all 6D values
+	// RCLCPP_WARN(node_->get_logger(), "target force  %f", target_force_);  
+	
+	/*Compute the integral term
+	Apply anti-windup limit to prevent the integral term
+	from accumulating excessively and causing overshoot or instability. This
+	usually happens if the system is saturated/unable to achieve the desired
+	output.*/
+	if (fabs(error) < anti_windup_error_threshold_) {  // Anti-windup
+		integral_[idx] += error * delta_time_;
+	}
 
-  // Compute the error
-  double error = target_force_ - measured_force;
+	// Compute the derivative term
+	double derivative = (error - previous_error_[idx] )/ delta_time_;
 
-  //In Moveit Pro implementation, it seems that this is needed to ensure 
-  //that the function is triggered for all 6D values
-  // RCLCPP_WARN(node_->get_logger(), "target force  %f", target_force_);  
-  
-  /*Compute the integral term
-  Apply anti-windup limit to prevent the integral term
-  from accumulating excessively and causing overshoot or instability. This
-  usually happens if the system is saturated/unable to achieve the desired
-  output.*/
-  if (fabs(error) < anti_windup_error_threshold_) {  // Anti-windup
-    integral_ += error * delta_time_;
-  }
+	// Compute the control signal, u(t), using the PID control law
+	double control_signal = kp_ * error + ki_ * integral_[idx] + kd_ * derivative;
 
-  // Compute the derivative term
-  double derivative = (error - previous_error_) / delta_time_;
+	previous_error_[idx] = error;  // Update the previous error
 
-  // Compute the control signal, u(t), using the PID control law
-  double control_signal = kp_ * error + ki_ * integral_ + kd_ * derivative;
+	// Compute the feedforward term
+	double feedforward_term{0.0};
+	feedforward_term = ff_gain_ * target_force_;
 
-  previous_error_ = error;  // Update the previous error
-  prev_time_ = cur_time;    // Update the previous time
+	return control_signal + feedforward_term;
+	}
 
-  // Compute the feedforward term
-  double feedforward_term{0.0};
-  feedforward_term = ff_gain_ * target_force_;
+	std::vector<double> ForceController::computeForceError(
+		const std::vector<double>& measured_wrench) {
+	std::vector<double> force_error(measured_wrench.size(), 0.0);
 
-  return control_signal + feedforward_term;
-}
-
-std::vector<double> ForceController::computeForceError(
-    const std::vector<double>& measured_wrench) {
-  std::vector<double> force_error(measured_wrench.size(), 0.0);
-
-  for (size_t i = 0; i < measured_wrench.size(); i++) {
-    if (measured_wrench.size() == target_wrench_.size()) {
-      force_error.at(i) = target_wrench_.at(i) - measured_wrench.at(i);
-    } else {
-      force_error.at(i) = target_force_ - measured_wrench.at(i);
-    }
-  }
-  return force_error;
+	for (size_t i = 0; i < measured_wrench.size(); i++) {
+		if (measured_wrench.size() == target_wrench_.size()) {
+		force_error.at(i) = target_wrench_.at(i) - measured_wrench.at(i);
+		} else {
+		force_error.at(i) = target_force_ - measured_wrench.at(i);
+		}
+	}
+	return force_error;
 }
 
 std::vector<double> ForceController::computeAdmittanceLaw(
     const std::vector<double>& measured_wrench) {
-  /*
-  Assumption: The robot is in full contact with the environment.
+	/*
+	Assumption: The robot is in full contact with the environment.
 
-  Main equation:  v = (F_error - kx) / b
-  where, F_target is the desired force, k is the stiffness, x is the
-  displacement, b is the damping, and v is the velocity. This ensures that
-  both the restoring force, kx, and the damping force, bv, act in directions
-  that oppose displacement and velocity, respectively, leading to a stable
-  equilibrium and controlled motion.
-  */
+	Main equation:  v = (F_error - kx) / b
+	where, F_target is the desired force, k is the stiffness, x is the
+	displacement, b is the damping, and v is the velocity. This ensures that
+	both the restoring force, kx, and the damping force, bv, act in directions
+	that oppose displacement and velocity, respectively, leading to a stable
+	equilibrium and controlled motion.
+	*/
 
-  std::vector<double> twist(measured_wrench.size(), 0.0);
+	std::vector<double> twist(measured_wrench.size(), 0.0);
 
-  // Initialize previous error signal vector
-  if (prev_error_signal_.empty()) {
-    prev_error_signal_.resize(measured_wrench.size(), 0.0);
-  }
+	// Initialize previous error signal vector
+	if (prev_error_signal_.empty()) {
+		prev_error_signal_.resize(measured_wrench.size(), 0.0);
+	}
 
-  // Compute the twist
-  for (size_t i = 0; i < measured_wrench.size(); i++) {
-    double error_signal{0.0};
-    if (use_pid_) { 
-      if(control_wrench_){
+	//  Get the time delta
+	double cur_time = node_->get_clock()->now().seconds();
+	delta_time_ = cur_time - prev_time_;
+	prev_time_ = cur_time;
 
-        // 6D PID case
-        target_force_ = target_wrench_.at(i);
-        error_signal = computePIDControlSignal(measured_wrench.at(i));
-      }
-      else { 
-        
-        // 1D PID case
-        DimensionHandler dim_handler(dimension_);
-        error_signal = computePIDControlSignal(dim_handler.getWrenchValue(cur_wrench_));
-      }
-    } 
-    else {
+	//  Handle the first iter when prev_time_ is zero or delta_time deviates wildly
+	if ((delta_time_ > 2*TIME_STEP) || (delta_time_ <= 1e-6) || (prev_time_ == 0.0)) {
+		RCLCPP_WARN(node_->get_logger(), "Delta time defaulted to constant. dt: %f", delta_time_);
+		delta_time_ = TIME_STEP;
+	}  
 
-      // 1D/6D P case
-      error_signal = kp_ * computeForceError(measured_wrench).at(i);
-    }
+	// Compute the twist
+	for (size_t i = 0; i < measured_wrench.size(); i++) {
+		double error_signal{0.0};
+		if (use_pid_) { 
+		if(control_wrench_){
 
-    // else (use_adaptive_k_)
-    // {
-    //   /* code */
-    // }
+			// 6D PID case
+			target_force_ = target_wrench_.at(i);
+			error_signal = computePIDControlSignal(measured_wrench.at(i));
+		}
+		else { 
+			
+			// 1D PID case
+			DimensionHandler dim_handler(dimension_);
+			error_signal = computePIDControlSignal(dim_handler.getWrenchValue(cur_wrench_));
+		}
+		} 
+		else {
 
-    // Admittance law (mass-damper)
-    twist.at(i) = -1 *
-                  (error_signal - (stiffness_.at(i) * displacement_.at(i))) /
-                  damping_.at(i);
+		// 1D/6D P case
+		error_signal = kp_ * computeForceError(measured_wrench).at(i);
+		}
 
-    // Cap the twist value to avoid excessively large updates
-    if (fabs(twist.at(i)) > max_twist_) {
-      twist.at(i) = std::copysign(max_twist_, twist.at(i));
-    }
-    // Update the displacement
-    displacement_.at(i) += twist.at(i) * delta_time_;
+		// else (use_adaptive_k_)
+		// {
+		//   /* code */
+		// }
 
-    // Reset condition for displacement: small twist, small error signal, or
-    // error signal sign change
-    if (fabs(twist.at(i)) < 1e-4 || fabs(error_signal) < 1e-4 ||
-        (prev_error_signal_.at(i) * error_signal < 0)) {
-      displacement_.at(i) = 0.0;
-    }
+		// Admittance law (mass-damper)
+		twist.at(i) = -1 *
+					(error_signal - (stiffness_.at(i) * displacement_.at(i))) /
+					damping_.at(i);
+	
+		// Cap the twist value to avoid excessively large updates
+		if (fabs(twist.at(i)) > max_twist_) {
+		twist.at(i) = std::copysign(max_twist_, twist.at(i));
+		}
+		// Update the displacement
+		displacement_.at(i) += twist.at(i) * delta_time_;
 
-    // Update previous error signal
-    prev_error_signal_.at(i) = error_signal;
-  }
+		// Reset condition for displacement: small twist, small error signal, or
+		// error signal sign change
+		if (fabs(twist.at(i)) < 1e-4 || fabs(error_signal) < 1e-4 ||
+			(prev_error_signal_.at(i) * error_signal < 0)) {
+		displacement_.at(i) = 0.0;
+		}
 
-  // std::cout << "displacement (y): " << displacement_.at(1) << std::endl;
-  std::cout << "computed twist (y): " << twist.at(1) << std::endl;
+		// Update previous error signal
+		prev_error_signal_.at(i) = error_signal;
+	}
 
-  return twist;
+	return twist;
 }
 
 }  // namespace twist_force_controller

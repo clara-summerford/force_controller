@@ -1,6 +1,7 @@
 #include "force_controller/hybrid_controller_action_server.hpp"
 #include "force_controller/utils/utils.hpp"
 #include <chrono>
+#include <fenv.h>
 
 
 
@@ -58,13 +59,15 @@ void HybridControllerActionServer::handle_accepted(
 void HybridControllerActionServer::execute(
     const std::shared_ptr<GoalHandleHybridController> goal_handle)
 {
+	feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
+
     const auto goal = goal_handle->get_goal();
     auto feedback = std::make_shared<HybridController::Feedback>();
     auto result = std::make_shared<HybridController::Result>();
 
     // Check if there is a cancel request
     if (goal_handle->is_canceling()) {
-        goal_handle->canceled(result);
+        goal_handle->canceled(result);   feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
         RCLCPP_INFO(node_->get_logger(), "Goal canceled");
         return;
     }
@@ -130,8 +133,7 @@ void HybridControllerActionServer::execute(
 
 	// Create a timer that calls the publish function every 10ms, enter control loop
     const int time_step{10};
-    timer_ = node_->create_wall_timer(
-        std::chrono::milliseconds(time_step),
+    timer_ = node_->create_wall_timer(std::chrono::milliseconds(time_step),
         std::bind(&HybridControllerActionServer::checkEndEffectorPose, this));	
 		
 
@@ -440,8 +442,8 @@ void HybridControllerActionServer::publishTwist() {
 	// Stop if very close to max force/torque or zero wrench
 	if (!force_controller_->isValidSensorWrench()) {
 		RCLCPP_WARN(node_->get_logger(), "Invalid sensor wrench, close to limits or 0");
-		stopMotion();
-		return;
+		// stopMotion();
+		// return;
 	}
 
 	geometry_msgs::msg::TwistStamped twist;
@@ -467,7 +469,6 @@ void HybridControllerActionServer::publishTwist() {
 	geometry_msgs::msg::TwistStamped force_controller_twist =
 		force_controller_->computeTwist();
 
-	// controller_utils::logTwistMsg(force_controller_twist, node_);
 
 	twist.twist = hybrid_multidim_utils::addTwists(
 	twist.twist, force_controller_twist.twist); // Add the twist values
@@ -477,14 +478,16 @@ void HybridControllerActionServer::publishTwist() {
 	// const int rotation_angle{-90};
 	// hybrid_multidim_utils::rotateLinearTwist(twist.twist, 'z', rotation_angle);
 
+	// controller_utils::logTwistMsg(twist, node_);
+
 
 	// Publish the twist message to MoveIt servo topic
 	// Creates empty twist message to send everything to 0
 	// geometry_msgs::msg::TwistStamped empty_twist; 
 	// empty_twist.header.stamp = node_->now();
 	// empty_twist.header.frame_id = params_.twist_pub_frame;
-
-	controller_utils::logTwistMsg(twist, node_);
+	
+	std::cout << "twist frame: " << twist.header.frame_id << std::endl;
 
 	twist_pub_->publish(twist);
 
@@ -493,28 +496,28 @@ void HybridControllerActionServer::publishTwist() {
 
 void HybridControllerActionServer::stopMotion() {
 
-  if (timer_) {
-  timer_->cancel();
-  timer_.reset();
-  }
+	if (timer_) {
+	timer_->cancel();
+	timer_.reset();
+	}
 
-  // Creates empty twist message to send everything to 0
-  geometry_msgs::msg::TwistStamped twist; 
-  twist.header.stamp = node_->now();
-  twist.header.frame_id = params_.twist_pub_frame;
+	// Creates empty twist message to send everything to 0
+	geometry_msgs::msg::TwistStamped twist; 
+	twist.header.stamp = node_->now();
+	twist.header.frame_id = params_.twist_pub_frame;
 
-  // Publish the twist message 
-  twist_pub_->publish(twist);
+	// Publish the twist message 
+	twist_pub_->publish(twist);
 
-  // Reset subs/pubs and pointers
-  joint_state_sub_.reset();
-  twist_pub_.reset();
+	// Reset subs/pubs and pointers
+	joint_state_sub_.reset();
+	twist_pub_.reset();
 
-  force_controller_.reset();
-  // params_.reset();
+	force_controller_.reset();
+	// params_.reset();
 
-  robot_state_.reset();
-  robot_model_loader_.reset();
+	robot_state_.reset();
+	robot_model_loader_.reset();
 }
 
 } // namespace hybrid_multidim_control

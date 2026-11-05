@@ -7,20 +7,20 @@ force_controller:
   force_setpoint: -10.0 # N 
   dimension: 'Z' 
   damping_1D: [100.0] # Ns/m or Nms/rad
-  stiffness_1D: [2000.0] # N/m or Nm/rad
+  stiffness_1D: [2000.0] # N/m or Nm/rad  
 
   ## Target wrench 
   # Use this to apply a wrench through active control of all dimensions
   control_wrench: true # If True, we control the 6D wrench. If false, we control only a 1D target force
   wrench_setpoint: [0.0, 0.0, -10.0, 0.0, 0.0, 0.0] # fx,fy,fz,tx,ty,tz
-  damping_6D: [100.0, 100.0, 100.0, 10.0, 10.0, 10.0] # Ns/m or Nms/rad
-  stiffness_6D: [2000.0, 2000.0, 2000.0, 100.0, 100.0, 100.0] # N/m or Nm/rad
+  damping_6D: [50.0, 50.0, 50.0, 10.0, 10.0, 10.0] # Ns/m or Nms/rad, changed from 100
+  stiffness_6D: [100.0, 100.0, 100.0, 100.0, 100.0, 100.0] # N/m or Nm/rad, changed from 2000
 
   pub_topic: servo_node/delta_twist_cmds #servo_node or twist streaming
   has_ft_sensor: True # Controls the initialization of the force controller object 
   wrench_sub_topic: /robotiq_force_torque_sensor_broadcaster/wrench  # FT sensor data streaming
   ff_gain: 0.0 # Feedforward gain. Set to 0.0 to disable the feedforward term. To add this term, find gain values that  
-    # balance the trade-off between achieving a fast and responsive force response with minimal overshoot or oscillations.
+    # balance the trade-off between achieving   a fast and responsive force response with minimal overshoot or oscillations.
   add_restoring_force_term: true # Add a restorative "kx" term to the control law
   anti_windup_error_threshold: 10.0 # N, error threshold for anti-windup
   ft_sensor_frame: end_effector_link  # "end_effector_link" # Reference link for the force sensor
@@ -34,7 +34,7 @@ force_controller:
 
   ## PID gains
   use_pid: true # Error signal calculated using PID control law. If false, defaults to just P controller.
-  kp: 0.05 # Proportional gain
+  kp: 0.1 # Proportional gain
   ki: 0.00 # Integral gain, adjust to improve the steady-state error.
   kd: 0.00 # Derivative gain, adjust to reduce overshoot and ringing.
   

@@ -128,8 +128,10 @@ void logWrenchVector(const std::vector<double>& wrench,
 }
  
 void logWrenchMsg(const geometry_msgs::msg::Wrench& wrench, 
-              rclcpp::Node::SharedPtr node) {
-  RCLCPP_INFO(node->get_logger(), "Wrench: [%f, %f, %f, %f, %f, %f]",
+              rclcpp::Node::SharedPtr node,
+              const std::string& msg) {
+  RCLCPP_INFO(node->get_logger(), "%s: [%f, %f, %f, %f, %f, %f]",
+              msg.c_str(), 
               wrench.force.x,
               wrench.force.y,
               wrench.force.z,
@@ -139,8 +141,10 @@ void logWrenchMsg(const geometry_msgs::msg::Wrench& wrench,
 }
 
 void logTwistMsg(const geometry_msgs::msg::TwistStamped& twist, 
-              rclcpp::Node::SharedPtr node) {
-  RCLCPP_INFO(node->get_logger(), "Twist: [%f, %f, %f, %f, %f, %f]",
+              rclcpp::Node::SharedPtr node,
+              const std::string& msg) {
+  RCLCPP_INFO(node->get_logger(), "%s: [%f, %f, %f, %f, %f, %f]",
+              msg.c_str(), 
               twist.twist.linear.x,
               twist.twist.linear.y,
               twist.twist.linear.z,

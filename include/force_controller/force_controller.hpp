@@ -187,9 +187,11 @@ class ForceController {
    * @details It uses a PID controller for the computation based on the force
    * error. The PID controller is tuned using the parameters kp_, kd_ and ki_.
    * @param measured_force The measured force in the set dimension
+   * @param idx Index of array for integral/previous error values for the 
+   * 6D control wrench case. Defaults to an index of 0 for 1D case. 
    * @return The computed twist value
    */
-  double computePIDControlSignal(const double measured_force);
+  double computePIDControlSignal(const double measured_force, double idx = 0);
 
   /**
    * @brief Computes the force error based on the measured force and target
@@ -234,8 +236,10 @@ class ForceController {
   bool control_wrench_, compensate_for_ee_weight_, use_pid_;
 
   double ff_gain_, max_twist_, target_force_, max_force_, max_torque_,
-      previous_error_, integral_, kp_, kd_, ki_, prev_time_, delta_time_,
-      anti_windup_error_threshold_;
+      kp_, kd_, ki_, anti_windup_error_threshold_;
+
+  // vars with default init values
+  double prev_time_{0.0}, delta_time_{0.0};
 
   filter_utils::FilterWrenchParams filter_params_;
 
@@ -255,7 +259,7 @@ class ForceController {
   bool tare_computed_{false};
   size_t tare_samples_{100};
   std::deque<geometry_msgs::msg::Wrench> tare_data_;
-  std::vector<double> prev_error_signal_;
+  std::vector<double> prev_error_signal_, previous_error_{0.0}, integral_{0.0};
   std::chrono::time_point<std::chrono::steady_clock> start_time_;
 
 };
